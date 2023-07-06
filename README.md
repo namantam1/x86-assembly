@@ -71,19 +71,60 @@ In addition to that, there are also several special-purpose registers as
 
 ## Data Accessing Methods
 
+The general form of memory address reference is:
+
+`address_Or_offset(base_Or_offset,index,multiplier)`
+
+Above all the fields are options, To calculate the address use the formula:
+
+`final_address = address_Or_offset + base_Or_offset + multiplier * index`
+
+> `multiplier` and `address_Or_offset` both must be constant, while other two must be registers. If any of the pieces is left out, it is just substituted with zero.
+
 We can access data in different ways.
 
-1. __Immediate mode:__ This is simplest mode in which data to access is embedded in the instruction itself. So, If we want to initialze a reigster to 0, we can write instruction as `movl $0, %eax`. In this $ indicates we want to use immediate mode addressing.
+1. __Immediate mode:__ This is simplest mode in which data to access is embedded in the instruction itself. Example: 
+   ```asm
+   movl $0, %eax
+   ```
 
-2. __Register addressing mode:__ In this instruction contains a register to access, rather than a memory location.
+   This load register %eax with value 0. In this $ indicates we want to use immediate mode addressing.
 
-3. __Direct addressing mode:__ In this instruction contains the memory address to access. For example we can say, Please load this register with data at address at 200.
+1. __Register addressing mode:__ In this instruction contains a register to access, rather than a memory location. Example:
+   ```asm
+   movl %eax, %ebx
+   ```
 
-4. __Index addressing mode:__ In this instruction contains a memory address along with an index register which specifies the offset to that address.
+   Copy value stored in register `%eax` to register `%ebx`.
 
-5. __Indirect addressing mode:__ In this instruction contains a register that contains a pointer to where the data should be accessed.
+1. __Direct addressing mode:__ In this instruction contains the memory address to access. For example we can say, Please load this register with data at address at 200. Example:
+   ```asm
+   movl ADDR, %eax
+   ```
 
-6. __Base pointer addressing mode:__ Similar to indirect addressing mode, but it includes a numver called the offset to add to register's value before using it for lookup.
+   This loads register %eax value at memory address ADDR.
+
+1. __Index addressing mode:__ In this instruction contains a memory address along with an index register which specifies the offset to that address.
+   ```asm
+   .section .data
+     .int 1,2,3,4
+
+   .
+   .
+   movl data_start(,%ecx, 2), %eax
+   ```
+
+   `Multiplier` is set as 2 here, as size of int is 2 bytes. `%ecx` contains the index of data to access.
+
+1. __Indirect addressing mode:__ In this instruction contains a register that contains a pointer to where the data should be accessed. If `%eax` held an address, we can move the value at that address to %ebx as
+   ```asm
+   movl (%eax), %ebx
+   ```
+
+1. __Base pointer addressing mode:__ Similar to indirect addressing mode, but it includes a number called the offset to add to register's value before using it for lookup. For example, if you have a record where the value is 4 bytes into the record, and you have the address of the record in `%eax`, you can retrieve the value into `%ebx` as
+   ```asm
+   movl 4(%eax), %ebx
+   ```
 
 ## Order of programs to read
 
