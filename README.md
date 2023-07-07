@@ -126,6 +126,54 @@ We can access data in different ways.
    movl 4(%eax), %ebx
    ```
 
+## Functions
+
+## Files
+
+### Opening a file with mode and permission
+
+- %eax will hold 5 for sys call
+- address of the first character if filename should be stored in %ebx.
+- Read/Write indentions represented as a number should be stored in %ecx. You can use 0 for files you want to read from and 03101 for files you want to write to.
+- Files persmission should be be stored as a number in %edx. We can in general use 0666 for permissions.
+
+```asm
+movl $5,    %eax
+movl $0,    %ebx
+movl $0666, %ecx
+int $0x80
+```
+
+The above instruction will return a file description in %eax. This number you can use to refer to this file throughout your program.
+
+
+### Read/Write from/to a file using file descriptor
+
+- read and write is a system call 3 and 4 respectively.
+- fd should be stored in %ebx.
+- The address of a buffer for tha data that is read stored in %ecx.
+- The size of buffer should be stored in %edx. `.bss.read` will return either number of bytes read or error code. In case of write %eax will contain the number of bytes written or an error code.
+
+### Close a file
+
+Close system call is 6. The only parameter to `close` is the fd placed in %ebx.
+
+> `.bss` section of program is like the data section, except that is doesn't take space in executable. This section can reserve storage, but you can't initialize it. In the `.data` section, you can't set an initial value.
+
+__For Example :__
+
+```asm
+.section .bss
+.lcomm my_buffer, 500 # it will reserve 500-bytes of storage which we
+                      # can use as a buffer
+```
+
+### FD for standard and specific files
+
+- STDIN:  0, it is read-only file.
+- STDOUT: 1, it is write-only file.
+- STDERR: 2, it is write-only file.
+
 ## Order of programs to read
 
 1. [exit.s](exit.s) - Program to show how to exit a program wich an exit status code.
