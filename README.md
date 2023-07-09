@@ -18,13 +18,13 @@ ld exit.out -o exit
 echo $? # prints exit code which the above program emits
 ```
 
-> If you are on a Windows OS, either you can install WSL or can use the pythonanywhere.com console to run these programs.
+> If you are on a Windows OS, either you can install WSL or use the pythonanywhere.com console to run these programs.
 
-Below I have documented some of the topics that are very important to learn assembly language.
+Below are some topics that are very important to learn assembly language.
 
 ## How an assembly program works?
 
-Operating system features are accessed through system calls. These system calls are invoked by setting up registers in a special way and issuing the instruction `int 0x80` where `int` stands for _interrupt_. Kernal knows which system call we want to access by what we store in __`%eax`__ register. Each system call has other requirements as to what needs to be stored in the different registers.
+Operating system features are accessed through system calls. These system calls are invoked by setting up registers in a special way and issuing the instruction `int 0x80` where `int` stands for _interrupt_. Kernal knows which system call you want to access by what you store in __`%eax`__ register. Each system call has other requirements as to what needs to be stored in the different registers.
 
 For example, system call number 1 is the _exit_ system call, which required the status code to be placed in __`%ebx`__.
 
@@ -36,9 +36,9 @@ int $0x80      # interrupt kernel
 
 A basic assembly program contains two sections, `.text` and `.data` (not necessarily required).
 
-The data section contains the content or data that we use in our program that's why this section is not necessary. 
+The data section contains the content or data that you can use in your program that's why this section is not necessary. 
 
-The text section contains the logic for our program. It must define from where the execution should start by setting __`globl`__ instruction as `globl _start` which starts the program execution from `_start` sections.
+The text section contains the logic for your program. It must define from where the execution should start by setting __`globl`__ instruction as `globl _start` which starts the program execution from `_start` sections.
 
 ## Registers
 
@@ -72,13 +72,13 @@ In addition to that, there are also several special-purpose registers as
 
 - __`decl` :__ Descrese the value by 1, like i--
 
-- __`idivl` :__ Requires that divident in `%eax` and `%edx` be zero, the quotient is then transferred to `%eax` and the remainder to `%edx`. However the divisor can be any register or memory location.
+- __`idivl` :__ Requires that divident in `%eax` and `%edx` be zero, the quotient is then transferred to `%eax` and the remainder to `%edx`. However, the divisor can be any register or memory location.
 
-- __`cmpl` :__ Used to compare two values. This compare instruction affects a register, the `%eflags` known as __status register__. The result of comparision is stored in status register. After this instruction we can use flow control instruction to jump to other part of program.
+- __`cmpl` :__ Used to compare two values. This compare instruction affects a register, the `%eflags` known as __status register__. The result of the comparison is stored in a status register. After this instruction, you can use flow control instruction to jump to other parts of the program.
   * `je`: Jump if values were equal.
-  * `jg`: Jump if the second value greater than to the first.
-  * `jge`: Jump if the second value greater than or quals to the first.
-  * `jl`: Jump if the second value less than to the first.
+  * `jg`: Jump if the second value is greater than the first.
+  * `jge`: Jump if the second value is greater than or equal to the first.
+  * `jl`: Jump if the second value is less than the first.
   * `jle`: Jump if the second value less than or equal to the first.
   * `jmp`: Jump no matter what. It does not need to be proceeded by a comparison.
 
@@ -95,14 +95,14 @@ Above all the fields are options, To calculate the address use the formula:
 
 > `multiplier` and `address_Or_offset` both must be constant, while the other two must be registers. If any of the pieces are left out, it is just substituted with zero.
 
-We can access data in different ways.
+You can access data in different ways.
 
 1. __Immediate mode:__ This is the simplest mode in which data to access is embedded in the instruction itself. Example: 
    ```asm
    movl $0, %eax
    ```
 
-   This load register %eax with a value of 0. `$` indicates we want to use immediate mode addressing.
+   This load register %eax with a value of 0. `$` indicates you want to use immediate mode addressing.
 
 1. __Register addressing mode:__ In this instruction contains a register to access, rather than a memory location. Example:
    ```asm
@@ -111,7 +111,7 @@ We can access data in different ways.
 
    Copy value stored in register `%eax` to register `%ebx`.
 
-1. __Direct addressing mode:__ In this instruction contains the memory address to access. For example, we can say, Please load this register with data at the address at 200. Example:
+1. __Direct addressing mode:__ In this, the instruction contains the memory address to access. For example, you can say, Please load this register with data at the address at 200. Example:
    ```asm
    movl ADDR, %eax
    ```
@@ -130,7 +130,7 @@ We can access data in different ways.
 
    `Multiplier` is set as 2 here, as the size of int is 2 bytes. `%ecx` contains the index of data to access.
 
-1. __Indirect addressing mode:__ In this instruction contains a register that contains a pointer to where the data should be accessed. If `%eax` held an address, we can move the value at that address to %ebx as
+1. __Indirect addressing mode:__ In this instruction contains a register that contains a pointer to where the data should be accessed. If `%eax` held an address, you can move the value at that address to %ebx as
    ```asm
    movl (%eax), %ebx
    ```
@@ -149,7 +149,7 @@ We can access data in different ways.
 - %eax will hold 5 for the sys call
 - address of the first character if filename should be stored in %ebx.
 - Read/Write indentions represented as a number should be stored in %ecx. You can use 0 for files you want to read from and 03101 for files you want to write to.
-- Files permission should be stored as a number in %edx. We can in general use 0666 for permissions.
+- Files permission should be stored as a number in %edx. You can in general use 0666 for permissions.
 
 ```asm
 movl $5,    %eax
@@ -163,7 +163,7 @@ The above instruction will return a file description in %eax. This number you ca
 
 ### Read/Write from/to a file using the file descriptor
 
-- read and write is a system call 3 and 4 respectively.
+- read and write is a system call with values 3 and 4 respectively.
 - fd should be stored in %ebx.
 - The address of a buffer for the data that is read stored in %ecx.
 - The size of the buffer should be stored in %edx. `.bss.read` will return either number of bytes read or the error code. In the case of write, %eax will contain the number of bytes written or an error code.
@@ -178,7 +178,7 @@ __For Example :__
 
 ```asm
 .section .bss
-.lcomm my_buffer, 500 # It will reserve 500 bytes of storage which we
+.lcomm my_buffer, 500 # It will reserve 500 bytes of storage which you
                       # can use as a buffer
 ```
 
