@@ -2,7 +2,9 @@
 
 This repository contains the assembly programs, I created while learning assembly programming from the book **Programming from the Ground Up** by **Jonathan Bartlell**.
 
-These assembly programs are 32-bit programs for an x86 processor and Linux operating system with **AT&T** syntax which can be compiled using GNU/GCC compiler.
+> I highly recommend this book to learn how a CPU executes a program, how memory is laid off, and how it moves back and forth from RAM to CPU to do computation and store results. You will also get a very well understanding of how high-level programs such as C/C++ compile down to machine code.
+
+These assembly programs are 32-bit programs for an **x86 processor** and Linux operating system with **AT&T** syntax which can be compiled using _GNU/GCC compiler_.
 
 The code can be compiled, linked, and executed as follows:
 
@@ -44,25 +46,25 @@ The text section contains the logic for your program. It must define from where 
 
 ## Registers
 
-On x86 processors, there are several general-purpose registers as
+On _x86 processors_, there are several general-purpose registers as
 
-- %eax
-- %ebx
-- %ecx
-- %edx
-- %edi
-- %esi
+- `%eax`
+- `%ebx`
+- `%ecx`
+- `%edx`
+- `%edi`
+- `%esi`
 
 In addition to that, there are also several special-purpose registers as
 
-- %ebp
-- %esp
-- %eip
-- %eflags
+- `%ebp`
+- `%esp`
+- `%eip`
+- `%eflags`
 
 ## Assembly Instructions
 
-- __`movl` :__ It has two operands, source and destination i.e. `movl $source, %dest_reigster`.
+- __`movl` :__ It has two operands, source and destination i.e. `movl $src_reg, %dest_reg`.
 
 - __`addl` :__ Add the source operate to destination.
 
@@ -118,7 +120,7 @@ You can access data in different ways.
    movl ADDR, %eax
    ```
 
-   The above program loads the register %eax value at the memory address ADDR.
+   The above program loads the register `%eax` value at the memory address ADDR.
 
 1. __Index addressing mode:__ In this instruction contains a memory address along with an index register that specifies the offset to that address.
    ```asm
@@ -130,9 +132,9 @@ You can access data in different ways.
    movl data_start(,%ecx, 2), %eax
    ```
 
-   `Multiplier` is set as 2 here, as the size of int is 2 bytes. `%ecx` contains the index of data to access.
+   **Multiplier** is set as 2 here, as the size of int is 2 bytes. `%ecx` contains the index of data to access.
 
-1. __Indirect addressing mode:__ In this instruction contains a register that contains a pointer to where the data should be accessed. If `%eax` held an address, you can move the value at that address to %ebx as
+1. __Indirect addressing mode:__ In this instruction contains a register that contains a pointer to where the data should be accessed. If `%eax` held an address, you can move the value at that address to `%ebx` as
    ```asm
    movl (%eax), %ebx
    ```
@@ -144,14 +146,83 @@ You can access data in different ways.
 
 ## Functions
 
+In the CPU we have a limited number of registers to store variables, you need to have some way to store local values in a structural way while calling functions to avoid loss of data as those functions can also call other functions. 
+
+This is where the computer's _stack_ comes into the picture. To get the current top of the stack, the stack register `%esp` is used.
+
+> **Note:** The computer stack grows downwards until it touches the data or text section of programs and crashed with a stack overflow error.
+
+**Important points to remember:**
+
+- To push value to stack use `pushl` instruction, `%esp` gets subtracted by 4 to point to new top of stack.
+  ```asm
+  pushl $4 # push value 4 into stack
+  ```
+
+- To remove something from the stack, use `popl` instruction, `%esp` gets added by 4.
+  ```asm
+  popl %eax # pop the top value into %eax
+  ```
+
+- To simply access the value on the top of the stack without removing it, you can use `%esp` in indirect addressing mode.
+  ```asm
+  movl (%esp), %eax
+  ```
+
+**How to execute a function in assembly?**
+
+Before executing a function, a program should push all of the parameters for the function onto the stack in the reverse order that they are documented. Then the program issues a `call` instruction indicating which function to call. It does two things, it first pushes the address of the next instruction which is the return address onto the stack. Then it modifies the instruction pointer `%eip` to start of the function.
+
+In a function, you can access all of the data by using a base pointer using a different offset from `%ebp`. `%ebp` was made specifically for this purpose which is why it is called the _base pointer_.
+
+When a function is done executing it should:
+
+- store return value in `%eax`.
+- reset stack to what it was when it was called.
+- return control back to wherever it was called from by using `ret` instruction.
+
+
+This is how all the function and its execution looks like in general. Below is an example of a sum function:
+
+```asm
+pushl $10        # push second arg
+pushl $20        # push first arg
+call  fun_name   # call function, which stores the result in %eax register
+addl  $8, %esp   # reset stack (function cleanup)
+
+# get the result as exit code
+movl  %eax, %ebx
+movl  $1, %eax
+int   $0x80
+
+
+# tell compiled that fun_name is a function
+.type fun_name, @function
+
+# function definition
+.fun_name:
+pushl %ebp            # save old base pointer
+movl  %esp, %ebp      # make stack pointer the base pointer
+
+movl  8(%ebp), %ebx   # get first arg
+movl  12(%ebp), %ecx  # get second arg
+movl  %ebx, %eax      # copy first val to res
+movl  %ecx, %eax      # add second val to res
+
+# restore stack before returning
+movl  %ebp, %esp      # restore stack pointer
+popl  %ebp            # restore base pointer
+ret
+```
+
 ## Files
 
 ### Opening a file with mode and permission
 
-- %eax will hold 5 for the sys call
-- address of the first character if filename should be stored in %ebx.
-- Read/Write indentions represented as a number should be stored in %ecx. You can use 0 for files you want to read from and 03101 for files you want to write to.
-- Files permission should be stored as a number in %edx. You can in general use 0666 for permissions.
+- `%eax` will hold 5 for the sys call
+- address of the first character if filename should be stored in `%ebx`.
+- Read/Write indentions represented as a number should be stored in `%ecx`. You can use 0 for files you want to read from and **03101** for files you want to write to.
+- Files permission should be stored as a number in `%edx`. You can in general use **0666** for permissions.
 
 ```asm
 movl $5,    %eax
@@ -160,19 +231,19 @@ movl $0666, %ecx
 int $0x80
 ```
 
-The above instruction will return a file description in %eax. This number you can use to refer to this file throughout your program.
+The above instruction will return a file description in `%eax`. This number you can use to refer to this file throughout your program.
 
 
 ### Read/Write from/to a file using the file descriptor
 
 - read and write is a system call with values 3 and 4 respectively.
-- fd should be stored in %ebx.
-- The address of a buffer for the data that is read stored in %ecx.
-- The size of the buffer should be stored in %edx. `.bss.read` will return either number of bytes read or the error code. In the case of write, %eax will contain the number of bytes written or an error code.
+- fd should be stored in `%ebx`.
+- The address of a buffer for the data that is to be read is stored in `%ecx`.
+- The size of the buffer should be stored in `%edx`. `.bss.read` will return either number of bytes read or the error code. In the case of write, `%eax` will contain the number of bytes written or an error code.
 
 ### Close a file
 
-The close system call is 6. The only parameter to `close` is the fd placed in %ebx.
+The close system call is 6. The only parameter to `close` is the fd placed in `%ebx`.
 
 > `.bss` section of the program is like the data section, except that it doesn't take space in the executable. This section can reserve storage, but you can't initialize it. In the `.data` section, you can't set an initial value.
 
