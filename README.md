@@ -2,14 +2,50 @@
 
 This repository provides the assembly programs I wrote while studying assembly programming from many different sources, including the book _"Programming from the Ground Up"_ by _Jonathan Bartlell_.
 
-This book is a must-read if you want to understand how a CPU runs programs, how memory is allocated, and how it switches back and forth between RAM and the CPU to do calculations and save results. Additionally, you'll gain a thorough grasp of how high-level programs like C/C++ translate into machine code.
+This book is a must-read if you want to understand how a computer runs programs, how memory is allocated, and how it switches back and forth between RAM and the CPU (registers) to do calculations and save results. Additionally, you'll gain a thorough grasp of how high-level programs like C/C++ translate into machine code.
 
 These assembly programs are 32-bit programs for an **x86 processor** and Linux operating system with **AT&T** syntax which can be compiled using _GNU/GCC compiler_.
 
-> **❗Important Note:** As I am new to assembly programming, the information provided in this repository might not be entirely accurate or error-free, despite my best efforts to prevent them. The knowledge contained in this repository is the result of information I've learned from a variety of sources.
+> 👉 **Important❗** As I am new to assembly programming, the information provided in this repository might not be entirely accurate or error-free, despite my best efforts to prevent them. The knowledge contained in this repository is the result of information I've learned from a variety of sources.
 >
 > Your comments are very appreciated if you discover any incorrect information. For it, you may create a PR. For further information, see the guidelines for your contributions.
+>
+> 👉 The reader is assumed to have a fundamental understanding of C/C++ or at least any other programming language in order to follow this assembly programming lesson. You can relate to the idea discussed in this guide more if you are proficient in C/C++. To comprehend the notion in the upcoming context, we will use the C programming language as a guide.
+>
+> 👉 The programs in this repository can be executed directly on Linux, Mac (not tested), Windows(by installing WSL), or by using the pythonanywhere.com terminal.
 
+# ✨Some Basics✨ (Very Very Important)
+
+What does a basic program look like in C?
+
+1. variable definition (char, int, long, array).
+2. some if/else conditions.
+3. some loops.
+4. calling functions.
+
+That's it, almost every programming language has at least these four things that we can do, but the question is how the computer interprets and run it. 
+
+Before going deep dive into it we must have some basic understanding of computer architecture. Every computer has:
+
+- CPU(central processing unit) where all operation takes place from mathematical calculation to what would happen if you click a key on your keyboard.
+- RAM(Ramdom access memory) which is a volatile memory. Why volatile as all data is lost on it once you restart your machine.
+
+There are a lot of other things in a computer but they are not useful for our context.
+
+Now following are the question you must ask:
+
+- How does the computer stores these values while running the program and do the calculation on them?
+- How the computer interprets if/else conditions and loops?
+- How a computer knows where to start executing a program?
+
+If we talk about a C program when it is compiled to an executable binary, It has two parts in it:
+
+1. data: contains values we have used in our program.
+2. text/code: actual code/logic that the computer should execute.
+
+For computers, these two are not different. When we compile our C program put a special program in it which tells the computer from where the computer should start reading the code and execute the instructions.
+
+# Running a program
 The code can be compiled, linked, and executed as follows:
 
 ```bash
@@ -25,8 +61,6 @@ ld -m elf_i386 -s exit.out -o exit
 # check if the exit code is correct
 echo $? # prints exit code which the above program emits
 ```
-
-> These programs can be executed directly on Linux, Mac (not tested), Windows(by installing WSL), or by using the pythonanywhere.com terminal.
 
 # Chapters 📖
 
@@ -52,7 +86,7 @@ _start:
  int $0x80 # wake kernal to exit 
 ```
 
-Similar code in C
+Corresponding C code
 
 ```c
 int main() {
@@ -86,7 +120,7 @@ end_block:
  int $0x80       # interrupt kernel
 ```
 
-Similar C program
+Corresponding C code
 
 ```c
 int main() {
@@ -149,9 +183,9 @@ In addition to that, there are also several special-purpose registers as
 
 - __`incl` :__ Increase the value by 1, like i++
 
-- __`decl` :__ Descrese the value by 1, like i--
+- __`decl` :__ Decrease the value by 1, like i--
 
-- __`idivl` :__ Requires that divident in `%eax` and `%edx` be zero, the quotient is then transferred to `%eax` and the remainder to `%edx`. However, the divisor can be any register or memory location.
+- __`idivl` :__ Requires that dividend in `%eax` and `%edx` be zero, the quotient is then transferred to `%eax` and the remainder to `%edx`. However, the divisor can be any register or memory location.
 
 - __`cmpl` :__ Used to compare two values. This compare instruction affects a register, the `%eflags` known as __status register__. The result of the comparison is stored in a status register. After this instruction, you can use flow control instruction to jump to other parts of the program.
   * `je`: Jump if values were equal.
@@ -229,7 +263,7 @@ This is where the computer's _stack_ comes into the picture. To get the current 
 
 **Important points to remember:**
 
-- To push value to stack use `pushl` instruction, `%esp` gets subtracted by 4 to point to new top of stack.
+- To push value to stack use `pushl` instruction, `%esp` gets subtracted by 4 to point to the new top of the stack.
   ```asm
   pushl $4 # push value 4 into stack
   ```
