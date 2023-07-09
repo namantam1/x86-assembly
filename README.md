@@ -2,16 +2,18 @@
 
 This repository contains the assembly programs, I created while learning assembly programming from the book **Programming from the Ground Up** by **Jonathan Bartlell**.
 
-These assembly programs are for an x86 32-bit processor and Linux operating system 
- with **AT&T** syntax. which can be compiled using GNU/GCC compiler.
+These assembly programs are 32-bit programs for an x86 processor and Linux operating system with **AT&T** syntax which can be compiled using GNU/GCC compiler.
 
 The code can be compiled, linked, and executed as follows:
 
 ```bash
-as exit.s -o exit.out
-ld exit.out -o exit
+# compile
+as -32 exit.s -o exit.out
 
-# running the program
+# link
+ld -m elf_i386 -s exit.out -o exit
+
+# execute
 ./exit
 
 # check if the exit code is correct
