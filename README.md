@@ -71,23 +71,19 @@ echo $? # will output 10
 In this, you will get to know how you can write conditional statements in assembly programs.
 
 ```asm
-.section .text                     
 .globl _start
-           
+.section .text
+
 _start:
- movl $1, %eax
- movl $10, %ebx
- movl $9, %ecx
+ movl $1, %eax   # exit sys call
+ movl $10, %ebx  # put value in %ebx, which is exit status of register also
+ movl $9, %ecx   # put value to compare in condition in %ecx
 
- cmpl %ebx, %ecx
- jge end
-
- 
-
-end:
- movl $1, %eax # sys call for exit
- movl $10, %ebx # exit status code
- int $0x80 # wake kernal to exit 
+ cmpl %ecx, %ebx # compare 10 with 9 if its greater than equal to
+ jge end_block   # if condition meet jump to the end
+ movl $0, %ebx   # otherwise set 0 in exit status register
+end_block:
+ int $0x80       # interrupt kernel
 ```
 
 Similar C program
