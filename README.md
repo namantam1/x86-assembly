@@ -1,10 +1,14 @@
 # Assembly tutorial
 
-This repository contains the assembly programs, I created while learning assembly programming from the book **Programming from the Ground Up** by **Jonathan Bartlell**.
+This repository provides the assembly programs I wrote while studying assembly programming from many different sources, including the book _"Programming from the Ground Up"_ by _Jonathan Bartlell_.
 
-> I highly recommend this book to learn how a CPU executes a program, how memory is laid off, and how it moves back and forth from RAM to CPU to do computation and store results. You will also get a very well understanding of how high-level programs such as C/C++ compile down to machine code.
+This book is a must-read if you want to understand how a CPU runs programs, how memory is allocated, and how it switches back and forth between RAM and the CPU to do calculations and save results. Additionally, you'll gain a thorough grasp of how high-level programs like C/C++ translate into machine code.
 
 These assembly programs are 32-bit programs for an **x86 processor** and Linux operating system with **AT&T** syntax which can be compiled using _GNU/GCC compiler_.
+
+> **❗Important Note:** As I am new to assembly programming, the information provided in this repository might not be entirely accurate or error-free, despite my best efforts to prevent them. The knowledge contained in this repository is the result of information I've learned from a variety of sources.
+>
+> Your comments are very appreciated if you discover any incorrect information. For it, you may create a PR. For further information, see the guidelines for your contributions.
 
 The code can be compiled, linked, and executed as follows:
 
@@ -22,11 +26,86 @@ ld -m elf_i386 -s exit.out -o exit
 echo $? # prints exit code which the above program emits
 ```
 
-> If you are on a Windows OS, either you can install WSL or use the pythonanywhere.com console to run these programs.
+> These programs can be executed directly on Linux, Mac (not tested), Windows(by installing WSL), or by using the pythonanywhere.com terminal.
+
+# Chapters 📖
+
+These chapters walk you through step-by-step assembly programming using concepts from other programming languages that you are likely already familiar with, including print, the **Hello World** program, conditions, loops, and functions.
+
+You will learn it in these chapters along with an example of how it might appear in C.
+
+## 1. First assembly program
+
+Your first program would have been a **Hello World** program for the majority of programming languages you may have learned up to this point, but developing a **Hello World** program in assembly is a bit more difficult and is covered in later chapters.
+
+So what will be the first assembly program we write?
+
+_really straightforward, a program that configures some registers and checks to see if they are configured properly by setting exit code_
+
+```asm
+.section .text                     
+.globl _start
+           
+_start:
+ movl $1, %eax # sys call for exit
+ movl $10, %ebx # exit status code
+ int $0x80 # wake kernal to exit 
+```
+
+Similar code in C
+
+```c
+int main() {
+ return 0;
+}
+```
+
+To check the exit code run
+
+```bash
+echo $? # will output 10
+```
+
+## 2. Conditional Statement (if/else)
+
+In this, you will get to know how you can write conditional statements in assembly programs.
+
+```asm
+.section .text                     
+.globl _start
+           
+_start:
+ movl $1, %eax
+ movl $10, %ebx
+ movl $9, %ecx
+
+ cmpl %ebx, %ecx
+ jge end
+
+ 
+
+end:
+ movl $1, %eax # sys call for exit
+ movl $10, %ebx # exit status code
+ int $0x80 # wake kernal to exit 
+```
+
+Similar C program
+
+```c
+int main() {
+ int x = 10;
+ if (x >= 9)
+  return x;
+ return 0;
+}
+```
+
+___
 
 Below are some topics that are very important to learn assembly language.
 
-## How an assembly program works?
+## How an assembly program works⚙️?
 
 Operating system features are accessed through system calls. These system calls are invoked by setting up registers in a special way and issuing the instruction `int 0x80` where `int` stands for _interrupt_. Kernal knows which system call you want to access by what you store in __`%eax`__ register. Each system call has other requirements as to what needs to be stored in the different registers.
 
@@ -44,7 +123,7 @@ The data section contains the content or data that you can use in your program t
 
 The text section contains the logic for your program. It must define from where the execution should start by setting __`globl`__ instruction as `globl _start` which starts the program execution from `_start` sections.
 
-## Registers
+## Registers 💻
 
 On _x86 processors_, there are several general-purpose registers as
 
