@@ -68,7 +68,7 @@ These chapters walk you through step-by-step assembly programming using concepts
 
 You will learn it in these chapters along with an example of how it might appear in C.
 
-## 1. First assembly program
+## First assembly program
 
 Your first program would have been a **Hello World** program for the majority of programming languages you may have learned up to this point, but developing a **Hello World** program in assembly is a bit more difficult and is covered in later chapters.
 
@@ -100,7 +100,7 @@ To check the exit code run
 echo $? # will output 10
 ```
 
-## 2. Conditional Statement (if/else)
+## Conditional Statement (if/else)
 
 Programming relies heavily on condition statements, such as the if, if-else, and else statements. To do this in assembly, use the **jump** instruction to jump to another section of the program. With the use of **jump**, you can make several branches that help in managing the program's workflow.
 
@@ -183,6 +183,82 @@ end:
  jg loop         # if so jump to loop until the condition is made
 
  int $0x80       # interrupt kernel
+```
+
+### Functions
+
+Functions are a crucial component of programming that helps in the development of code that is reusable, modular, and maintained. You must have been taught that when we call a function stack is used internally to keep track of data used from where it is called and of functions while studying functions in other programming languages. You will see how this is done in assembly.
+
+We only have a limited amount of registers, thus when calling a function, you must keep local variables (in registers) where they won't be lost because the function may mutate and utilize the same register. Additionally, you need to have a structured manner to store data so that you can simply restore it after running the function. `%esp`, a unique register that is referred to as a stack register, is used in order to help with this.
+
+A program should use the `pushl` instruction to push all of the function's parameters onto the stack before the function is executed, in the opposite order that they are listed in the documentation. Then issue a `call` instruction specifying which function name to call. It initially pushes the return address, which is the address of the following instruction, into the stack. After that, it changes the instruction pointer `%eip` to refer to the function's start.
+
+> **Note:** Computer stack expands downward until it reaches the text or data portions of programs, at which point it crash programs due to a stack overflow error.
+
+In a function, you can access all of the data by using a base pointer using a different offset from `%ebp`. `%ebp` was made specifically for this purpose which is why it is called the _base pointer_.
+
+**✨Important✨:** Following are the step to set up function parameters, define a function, call the function, and give control back to the point where it is called.
+
+1. push function parameters in reverse order using `pushl` instruction.
+1. call the function by issue a `call` instruction with function name.
+1. define function anywhere in program file as `.type <function_name>, @function`.
+1. start the function block with the function name.
+1. Now the first two instructions should be to store the old base pointer in the stack and make stack current position your base point.
+   ```asm
+   pushl %ebp            # save old base pointer
+   movl  %esp, %ebp      # make stack pointer the base pointer
+   ```
+1. Get the function parameter by using `%ebp` register in base pointer addressing mode.
+1. Do calculations.
+1. store the return value in `%eax`.
+1. reset the stack to what it was when it was called by using the instructions `movl %ebp %esp` and `popl %ebp`.
+1. return control back to wherever it was called from by using `ret` instruction.
+
+
+For example:
+
+```c
+int sum(int a, int b) {
+  return a + b;
+}
+
+int main() {
+  int s = sum(10, 20);
+  return s;
+}
+```
+
+The corresponding assembly program will look like this:
+
+```asm
+pushl $10        # push second arg
+pushl $20        # push first arg
+call  fun_name   # call function, which stores the result in %eax register
+addl  $8, %esp   # reset stack (function cleanup)
+
+# get the result as exit code
+movl  %eax, %ebx
+movl  $1, %eax
+int   $0x80
+
+
+# tell compiled that fun_name is a function
+.type fun_name, @function
+
+# function definition
+.fun_name:
+pushl %ebp            # save old base pointer
+movl  %esp, %ebp      # make stack pointer the base pointer
+
+movl  8(%ebp), %ebx   # get first arg
+movl  12(%ebp), %ecx  # get second arg
+movl  %ebx, %eax      # copy first val to res
+movl  %ecx, %eax      # add second val to res
+
+# restore stack before returning
+movl  %ebp, %esp      # restore stack pointer
+popl  %ebp            # restore base pointer
+ret
 ```
 ___
 
