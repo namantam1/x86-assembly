@@ -102,7 +102,29 @@ echo $? # will output 10
 
 ## 2. Conditional Statement (if/else)
 
-In this, you will get to know how you can write conditional statements in assembly programs.
+Programming relies heavily on condition statements, such as the if, if-else, and else statements. To do this in assembly, use the **jump** instruction to jump to another section of the program. With the use of **jump**, you can make several branches that help in managing the program's workflow.
+
+We must first compare some values using the 'cmpl' instruction, which saves the outcome in a specially designated register called the '%eflags' register, before we may conditionally jump. Below is the list of instructions to jump based on the result of compare.
+
+* `je`: Jump if values were equal.
+* `jg`: Jump if the second value is greater than the first.
+* `jge`: Jump if the second value is greater than or equal to the first.
+* `jl`: Jump if the second value is less than the first.
+* `jle`: Jump if the second value less than or equal to the first.
+* `jmp`: Jump no matter what. It does not need to be proceeded by a comparison.
+
+For example:
+
+```c
+int main() {
+ int x = 10;
+ if (x >= 9)
+  return x;
+ return 0;
+}
+```
+
+We can write the corresponding assembly code as:
 
 ```asm
 .globl _start
@@ -120,17 +142,48 @@ end_block:
  int $0x80       # interrupt kernel
 ```
 
-Corresponding C code
+Check more examples of using conditional statements in ......
+
+### Loops (for/while/do while)
+
+Similar to if/else conditions you can use **jump** instruction to create a loop in the assembly.
+
+For example:
 
 ```c
 int main() {
- int x = 10;
- if (x >= 9)
-  return x;
- return 0;
+  int sum = 0;
+  int i = 10;
+  while (i > 0) {
+    sum += i;
+    i--;
+  }
+
+  return sum;
 }
 ```
 
+The corresponding assembly program can be written as:
+
+```asm
+.globl _start  
+.section .text                                                                                                                                       
+                                                                                  
+_start:                                                                           
+ movl $1, %eax   # set sys call
+ movl $0, %ebx   # initialze %ebx (status code register) to 0
+ movl $10, %ecx  # store 10 in %ecx
+
+loop:
+ addl %ecx, %ebx # add current value to %ebx
+ decl %ecx       # decrease %ecx by 1
+
+end:
+ cmpl $0, %ecx   # check if greater than 0
+ jg loop         # if so jump to loop until the condition is made
+
+ int $0x80       # interrupt kernel
+```
 ___
 
 Below are some topics that are very important to learn assembly language.
