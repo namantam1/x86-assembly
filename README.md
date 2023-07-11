@@ -27,7 +27,7 @@ That's it, almost every programming language has at least these four things that
 
 Every program requires CPU and RAM to run, I'm not saying only these two are required, but for understanding the basics we need to focus on these two.
 
-Every CPU has some general purpose registers and some special registers, We can think of these registers as memory locations in the CPU. For example, the x86 processor has the following general-purpose register:
+Every CPU has some general purpose registers and some special registers, We can think of these registers as memory locations in the CPU. For example, the _x86 processor_ has the following general-purpose register:
 
 - `%eax`
 - `%ebx`
@@ -43,7 +43,7 @@ In addition to these general-purpose registers, there are also special-purpose r
 - `%eip`: Instruction pointer register
 - `%eflags`: status register
 
-Depending on the CPU architecture, each register can hold either 32-bit or 64-bit data. Since we can't save all data in registers as there are a fixed number of registers in the CPU.
+Depending on the CPU architecture, each register can hold either `32-bit` or `64-bit` data. Since we can't save all variables in registers as there are a fixed number of registers in the CPU.
 
 RAM enters the picture at this point. Data can be kept in RAM and pointed to a register using its RAM address. As a result, during program execution, data may transfer from RAM to CPU and, following processing, may return to RAM.
 
@@ -101,7 +101,7 @@ _start:
  int $0x80 # wake kernal to exit 
 ```
 
-- The First line in the above code tells the compiler that the logic of the program starts from there which is `text` section. There can be other sections in the program such as `data` section and `.bss` section which is discussed later.
+- The First line in the above code tells the compiler that the logic of the program starts from there which is `.text` section. There can be other sections in the program such as `.data` section and `.bss` section which is discussed later.
 
 - `.globl _start` tells from which block of code execution of the program should start.
 
@@ -109,7 +109,7 @@ _start:
 
 - The `movl` is an assembly instruction with two `operands` that says the data to move from first to second. Check more instructions in the [assembly instructions](#assembly-instructions) section.
 
-- `$` sign before the first operand indicated we want to use immediate addressing mode which embeds the data into the instruction itself. Please check [data accessing methods](#data-accessing-methods) for details discussion on it.
+- `$` sign before the first operand indicated we want to use immediate addressing mode which embeds the data into the instruction itself. Please check [data accessing [methods](#data-accessing-methods) for a details discussion on it.
 
 - 1 is set into `%eax` register for the exit syscall and `%ebx` is set with an exit code value that is 10.
 
@@ -126,7 +126,7 @@ echo $? # will output 10
 
 Programming relies heavily on condition statements, such as the if, if-else, and else statements. To do this in assembly, use the **jump** instruction to jump to another section of the program. With the use of **jump**, you can make several branches that help in managing the program's workflow.
 
-We must first compare some values using the 'cmpl' instruction, which saves the outcome in a specially designated register called the '%eflags' register, before we may conditionally jump. Below is the list of instructions to jump based on the result of compare.
+We must first compare some values using the `cmpl` instruction, which saves the outcome in a specially designated register called the `%eflags` register, before we may conditionally jump. Below is the list of instructions to jump based on the result of compare.
 
 * `je`: Jump if values were equal.
 * `jg`: Jump if the second value is greater than the first.
@@ -222,14 +222,14 @@ In a function, you can access all of the data by using a base pointer using a di
 
 1. push function parameters in reverse order using `pushl` instruction.
 1. call the function by issue a `call` instruction with function name.
-1. define function anywhere in program file as `.type <function_name>, @function`.
+1. define function anywhere in the program file as `.type <function_name>, @function`.
 1. start the function block with the function name.
-1. Now the first two instructions should be to store the old base pointer in the stack and make stack current position your base point.
+1. Now the first two instructions should be to store the old base pointer in the stack and make the stack current position your base point.
    ```asm
    pushl %ebp            # save old base pointer
    movl  %esp, %ebp      # make stack pointer the base pointer
    ```
-1. Get the function parameter by using `%ebp` register in base pointer addressing mode.
+1. Get the function parameter by using the `%ebp` register in base pointer addressing mode.
 1. Do calculations.
 1. store the return value in `%eax`.
 1. reset the stack to what it was when it was called by using the instructions `movl %ebp %esp` and `popl %ebp`.
@@ -371,15 +371,15 @@ You can see that the format string is terminated with a `NULL` since `printf` re
 
 - __`movl` :__ It has two operands, source and destination i.e. `movl $src_reg, %dest_reg`.
 
-- __`addl` :__ Add the source operate to destination.
+- __`addl` :__ Add the source operand to the destination.
 
-- __`subl` :__ Subract the source operand from destination.
+- __`subl` :__ Subract the source operand from the destination.
 
-- __`imull` :__ Multiply the source operant by destination.
+- __`imull` :__ Multiply the source operant by the destination.
 
-- __`incl` :__ Increase the value by 1, like i++
+- __`incl` :__ Increase the value by 1, like `i++`
 
-- __`decl` :__ Decrease the value by 1, like i--
+- __`decl` :__ Decrease the value by 1, like `i--`
 
 - __`idivl` :__ Requires that dividend in `%eax` and `%edx` be zero, the quotient is then transferred to `%eax` and the remainder to `%edx`. However, the divisor can be any register or memory location.
 
@@ -403,7 +403,7 @@ You can access data in different ways.
    movl $0, %eax
    ```
 
-   This load registers %eax with a value of 0. `$` indicates you want to use immediate mode addressing.
+   This load registers `%eax` with a value of 0. `$` indicates you want to use immediate mode addressing.
 
 1. __Register addressing mode:__ In this instruction contains a register to access, rather than a memory location. Example:
    ```asm
