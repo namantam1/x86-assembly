@@ -2,9 +2,9 @@
 
 This repository provides the assembly programs I wrote while studying assembly programming from many different sources, including the book _"Programming from the Ground Up"_ by _Jonathan Bartlell_.
 
-This book is a must-read if you want to understand how a computer runs programs, how memory is allocated, and how it switches back and forth between RAM and the CPU (registers) to do calculations and save results. Additionally, you'll gain a thorough grasp of how high-level programs like C/C++ translate into machine code.
+This book is highly recommended if you want to understand how a computer runs programs, how memory is allocated, and how data moves back and forth between RAM and the CPU (registers) to do calculations and save results. Additionally, you'll gain a thorough grasp of how high-level programs like C/C++ compile down to machine code which computers can understand and execute.
 
-These assembly programs are 32-bit programs for an **x86 processor** and Linux operating system with **AT&T** syntax which can be compiled using _GNU/GCC compiler_.
+These assembly programs in this repository are 32-bit programs for an **x86 processor** and Linux operating system with **AT&T** syntax which can be compiled using _GNU/GCC compiler_.
 
 > 👉 **Important❗** As I am new to assembly programming, the information provided in this repository might not be entirely accurate or error-free, despite my best efforts to prevent them. The knowledge contained in this repository is the result of information I've learned from a variety of sources.
 >
@@ -12,7 +12,7 @@ These assembly programs are 32-bit programs for an **x86 processor** and Linux o
 >
 > 👉 The reader is assumed to have a fundamental understanding of C/C++ or at least any other programming language in order to follow this assembly programming lesson. You can relate to the idea discussed in this guide more if you are proficient in C/C++. To comprehend the notion in the upcoming context, we will use the C programming language as a guide.
 >
-> 👉 The programs in this repository can be executed directly on Linux, Mac (not tested), Windows(by installing WSL), or by using the pythonanywhere.com terminal.
+> 👉 The programs in this repository can be executed using GCC compiler on Linux, Mac (not tested), Windows(by installing WSL).
 
 # ✨Some Basics✨ (Very Very Important)
 
@@ -25,27 +25,34 @@ What does a basic program look like in C?
 
 That's it, almost every programming language has at least these four things that we can do, but the question is how the computer interprets and run it. 
 
-Before going deep dive into it we must have some basic understanding of computer architecture. Every computer has:
+Every program requires CPU and RAM to run, I'm not saying only these two are required, but for understanding the basics we need to focus on these two.
 
-- CPU(central processing unit) where all operation takes place from mathematical calculation to what would happen if you click a key on your keyboard.
-- RAM(Ramdom access memory) which is a volatile memory. Why volatile as all data is lost on it once you restart your machine.
+Every CPU has some general purpose registers and some special registers, We can think of these registers as memory locations in the CPU. For example, the x86 processor has the following general-purpose register:
 
-There are a lot of other things in a computer but they are not useful for our context.
+- `%eax`
+- `%ebx`
+- `%ecx`
+- `%edx`
+- `%edi`
+- `%esi`
 
-Now following are the question you must ask:
+In addition to these general-purpose registers, there are also special-purpose registers, including:
 
-- How does the computer stores these values while running the program and do the calculation on them?
-- How the computer interprets if/else conditions and loops?
-- How a computer knows where to start executing a program?
+- `%ebp`: Base pointer register
+- `%esp`: Stack pointer register
+- `%eip`: Instruction pointer register
+- `%eflags`: status register
 
-If we talk about a C program when it is compiled to an executable binary, It has two parts in it:
+Depending on the CPU architecture, each register can hold either 32-bit or 64-bit data. Since we can't save all data in registers as there are a fixed number of registers in the CPU.
 
-1. data: contains values we have used in our program.
-2. text/code: actual code/logic that the computer should execute.
+RAM enters the picture at this point. Data can be kept in RAM and pointed to a register using its RAM address. As a result, during program execution, data may transfer from RAM to CPU and, following processing, may return to RAM.
 
-For computers, these two are not different. When we compile our C program put a special program in it which tells the computer from where the computer should start reading the code and execute the instructions.
+Operating system features are accessed through system calls. These system calls are invoked by setting up registers in a special way and issuing the instruction `int $0x80` where int stands for interrupt. Kernal knows which system call you want to access by what you store in `%eax` register. Each system call has other requirements as to what needs to be stored in the different registers.
 
-# Running a program
+Conditional statements, loops and functions are discussed in detail in upcoming topics.
+
+# Compiling and Execution
+
 The code can be compiled, linked, and executed as follows:
 
 ```bash
@@ -74,9 +81,17 @@ Your first program would have been a **Hello World** program for the majority of
 
 So what will be the first assembly program we write?
 
-_really straightforward, a program that configures some registers and checks to see if they are configured properly by setting exit code_
+We will write a very simple program that exits with a certain exit code. You can write a C program for it as:
 
-```asm
+```c
+int main() {
+ return 0;
+}
+```
+
+To accomplish the same in assembly
+
+```s
 .section .text                     
 .globl _start
            
@@ -86,15 +101,22 @@ _start:
  int $0x80 # wake kernal to exit 
 ```
 
-Corresponding C code
+- The First line in the above code tells the compiler that the logic of the program starts from there which is `text` section. There can be other sections in the program such as `data` section and `.bss` section which is discussed later.
 
-```c
-int main() {
- return 0;
-}
-```
+- `.globl _start` tells from which block of code execution of the program should start.
 
-To check the exit code run
+- `_start:` tells `_start` block starts here.
+
+- The `movl` is an assembly instruction with two `operands` that says the data to move from first to second. Check more instructions in the [assembly instructions](#assembly-instructions) section.
+
+- `$` sign before the first operand indicated we want to use immediate addressing mode which embeds the data into the instruction itself. Please check [data accessing methods](#data-accessing-methods) for details discussion on it.
+
+- 1 is set into `%eax` register for the exit syscall and `%ebx` is set with an exit code value that is 10.
+
+- `int $0x80` is used to interrupt the kernel and issue the system call.
+
+
+To verify the exit code of the above program run
 
 ```bash
 echo $? # will output 10
@@ -126,7 +148,7 @@ int main() {
 
 We can write the corresponding assembly code as:
 
-```asm
+```s
 .globl _start
 .section .text
 
@@ -142,7 +164,6 @@ end_block:
  int $0x80       # interrupt kernel
 ```
 
-Check more examples of using conditional statements in ......
 
 ### Loops (for/while/do while)
 
@@ -165,11 +186,11 @@ int main() {
 
 The corresponding assembly program can be written as:
 
-```asm
+```s
 .globl _start  
-.section .text                                                                                                                                       
-                                                                                  
-_start:                                                                           
+.section .text
+
+_start:
  movl $1, %eax   # set sys call
  movl $0, %ebx   # initialze %ebx (status code register) to 0
  movl $10, %ecx  # store 10 in %ecx
@@ -189,7 +210,7 @@ end:
 
 Functions are a crucial component of programming that helps in the development of code that is reusable, modular, and maintained. You must have been taught that when we call a function stack is used internally to keep track of data used from where it is called and of functions while studying functions in other programming languages. You will see how this is done in assembly.
 
-We only have a limited amount of registers, thus when calling a function, you must keep local variables (in registers) where they won't be lost because the function may mutate and utilize the same register. Additionally, you need to have a structured manner to store data so that you can simply restore it after running the function. `%esp`, a unique register that is referred to as a stack register, is used in order to help with this.
+We only have a limited amount of registers, thus when calling a function, you must keep local variables (in registers) where they won't be lost because the function may mutate and utilize the same register. Additionally, you need to have a structured manner to store data so that you can simply restore it after running the function. `%esp`, a unique register that is referred to as a stack register, is used to help with this.
 
 A program should use the `pushl` instruction to push all of the function's parameters onto the stack before the function is executed, in the opposite order that they are listed in the documentation. Then issue a `call` instruction specifying which function name to call. It initially pushes the return address, which is the address of the following instruction, into the stack. After that, it changes the instruction pointer `%eip` to refer to the function's start.
 
@@ -230,7 +251,7 @@ int main() {
 
 The corresponding assembly program will look like this:
 
-```asm
+```s
 pushl $10        # push second arg
 pushl $20        # push first arg
 call  fun_name   # call function, which stores the result in %eax register
@@ -260,45 +281,91 @@ movl  %ebp, %esp      # restore stack pointer
 popl  %ebp            # restore base pointer
 ret
 ```
-___
 
-Below are some topics that are very important to learn assembly language.
+### "Hello World!" Program 👋
 
-## How an assembly program works⚙️?
+Exit status codes were previously used as a program's output, however, they shouldn't be used for this. You must be aware by this point that a system call, such as the one you just made by setting the `%eax` register to 1, is required to execute any type of I/O. In the same way, you would need to make a system call to print something to the console. 
 
-Operating system features are accessed through system calls. These system calls are invoked by setting up registers in a special way and issuing the instruction `int 0x80` where `int` stands for _interrupt_. Kernal knows which system call you want to access by what you store in __`%eax`__ register. Each system call has other requirements as to what needs to be stored in the different registers.
+To accomplish this, set the `%eax` register to 4 to initiate a **write** system call. You need to set the `%ebx` register to the file descriptor value, which is 1 for `stdout`, the `%ecx` register to the location of the buffer, and the `%edx` register to the size of the message to print.
 
-For example, system call number 1 is the _exit_ system call, which required the status code to be placed in __`%ebx`__.
+For a thorough description of opening, closing, reading, and writing files, refer to the [files](#files) section.
 
-```asm
-movl $1,  %eax # system call
-movl $10, %ebx # set exit status code
-int $0x80      # interrupt kernel
+Here is an example of an assembly program
+
+```s
+.globl _start
+
+
+.section .data
+ msg:
+  .ascii "Hello World\n"
+
+.section .text
+_start:
+ movl $4, %eax          # sys call for write
+ movl $1, %ebx          # set fd which is 1 for stdout
+ movl $msg, %ecx        # set buffer address
+ movl $12, %edx         # set msg size
+ int $0x80              # interrupt kernel to make sys call
+
+ # exit program with successfull status code
+ movl $1, %eax
+ movl $0, %ebx
+ int $0x80
 ```
 
-A basic assembly program contains two sections, `.text` and `.data` (not necessarily required).
+The program mentioned above uses the system call `write` to print a message to the console, although this is not advised because it is difficult to fill up each block of buffer with an ASCII value if you wish to display a dynamic message.
 
-The data section contains the content or data that you can use in your program that's why this section is not necessary. 
+Therefore, we can utilize the standard `printf` function with signature `int printf(const char *restrict format, ...);` provided by `libc` rather than making a direct sys call.
 
-The text section contains the logic for your program. It must define from where the execution should start by setting __`globl`__ instruction as `globl _start` which starts the program execution from `_start` sections.
+For example:
 
-## Registers 💻
+```c
+#include <stdio.h>
 
-On _x86 processors_, there are several general-purpose registers as
+int main() {
+  printf("Value of x is %d\n", 10);
+  return 0;
+}
+```
 
-- `%eax`
-- `%ebx`
-- `%ecx`
-- `%edx`
-- `%edi`
-- `%esi`
+We can write the corresponding assembly code as:
 
-In addition to that, there are also several special-purpose registers as
+```s
+.globl _start
 
-- `%ebp`
-- `%esp`
-- `%eip`
-- `%eflags`
+.section .data
+
+msg:
+.ascii "Value of x is %d\n\0"
+
+.section .text
+_start:
+pushl $10          # set second param as int value
+pushl $msg         # set first param as formatted string
+call printf        # call printf function
+
+# exit program with success exit code
+movl $1, %eax
+movl $0, %ebx
+int $0x80
+```
+
+To compile above code you need to tell the linker to link `libc` so that you can utilize the `printf` function provided by it. We can compile, link and execute above code as:
+
+```bash
+as -32 main.asm -o main.out
+ld -dynamic-linker /lib/ld-linux.so.2 main.out -m elf_i386 -s -o run -lc
+
+./run
+# output: Value of x is 10
+```
+
+You can see that the format string is terminated with a `NULL` since `printf` requires a string buffer and assumes that the buffer's endpoint is terminated with a `NULL`.
+
+> 👉 Similary, You can use other functions provided in `libc`, and to get their signature you can check their **man** page.
+
+# Important topics
 
 ## Assembly Instructions
 
@@ -315,14 +382,6 @@ In addition to that, there are also several special-purpose registers as
 - __`decl` :__ Decrease the value by 1, like i--
 
 - __`idivl` :__ Requires that dividend in `%eax` and `%edx` be zero, the quotient is then transferred to `%eax` and the remainder to `%edx`. However, the divisor can be any register or memory location.
-
-- __`cmpl` :__ Used to compare two values. This compare instruction affects a register, the `%eflags` known as __status register__. The result of the comparison is stored in a status register. After this instruction, you can use flow control instruction to jump to other parts of the program.
-  * `je`: Jump if values were equal.
-  * `jg`: Jump if the second value is greater than the first.
-  * `jge`: Jump if the second value is greater than or equal to the first.
-  * `jl`: Jump if the second value is less than the first.
-  * `jle`: Jump if the second value less than or equal to the first.
-  * `jmp`: Jump no matter what. It does not need to be proceeded by a comparison.
 
 
 ## Data Accessing Methods
@@ -344,7 +403,7 @@ You can access data in different ways.
    movl $0, %eax
    ```
 
-   This load register %eax with a value of 0. `$` indicates you want to use immediate mode addressing.
+   This load registers %eax with a value of 0. `$` indicates you want to use immediate mode addressing.
 
 1. __Register addressing mode:__ In this instruction contains a register to access, rather than a memory location. Example:
    ```asm
@@ -377,88 +436,17 @@ You can access data in different ways.
    movl (%eax), %ebx
    ```
 
-1. __Base pointer addressing mode:__ Similar to indirect addressing mode, but it includes a number called the offset to add to the register's value before using it for lookup. For example, if you have a record where the value is 4 bytes into the record, and you have the address of the record in `%eax`, you can retrieve the value into `%ebx` as
+1. __Base pointer addressing mode:__ Similar to indirect addressing mode, it includes a number called the offset to add to the register's value before using it for lookup. For example, if you have a record where the value is 4 bytes into the record, and you have the address of the record in `%eax`, you can retrieve the value into `%ebx` as
    ```asm
    movl 4(%eax), %ebx
    ```
 
-## Functions
-
-In the CPU we have a limited number of registers to store variables, you need to have some way to store local values in a structural way while calling functions to avoid loss of data as those functions can also call other functions. 
-
-This is where the computer's _stack_ comes into the picture. To get the current top of the stack, the stack register `%esp` is used.
-
-> **Note:** The computer stack grows downwards until it touches the data or text section of programs and crashed with a stack overflow error.
-
-**Important points to remember:**
-
-- To push value to stack use `pushl` instruction, `%esp` gets subtracted by 4 to point to the new top of the stack.
-  ```asm
-  pushl $4 # push value 4 into stack
-  ```
-
-- To remove something from the stack, use `popl` instruction, `%esp` gets added by 4.
-  ```asm
-  popl %eax # pop the top value into %eax
-  ```
-
-- To simply access the value on the top of the stack without removing it, you can use `%esp` in indirect addressing mode.
-  ```asm
-  movl (%esp), %eax
-  ```
-
-**How to execute a function in assembly?**
-
-Before executing a function, a program should push all of the parameters for the function onto the stack in the reverse order that they are documented. Then the program issues a `call` instruction indicating which function to call. It does two things, it first pushes the address of the next instruction which is the return address onto the stack. Then it modifies the instruction pointer `%eip` to start of the function.
-
-In a function, you can access all of the data by using a base pointer using a different offset from `%ebp`. `%ebp` was made specifically for this purpose which is why it is called the _base pointer_.
-
-When a function is done executing it should:
-
-- store return value in `%eax`.
-- reset stack to what it was when it was called.
-- return control back to wherever it was called from by using `ret` instruction.
-
-
-This is how all the function and its execution looks like in general. Below is an example of a sum function:
-
-```asm
-pushl $10        # push second arg
-pushl $20        # push first arg
-call  fun_name   # call function, which stores the result in %eax register
-addl  $8, %esp   # reset stack (function cleanup)
-
-# get the result as exit code
-movl  %eax, %ebx
-movl  $1, %eax
-int   $0x80
-
-
-# tell compiled that fun_name is a function
-.type fun_name, @function
-
-# function definition
-.fun_name:
-pushl %ebp            # save old base pointer
-movl  %esp, %ebp      # make stack pointer the base pointer
-
-movl  8(%ebp), %ebx   # get first arg
-movl  12(%ebp), %ecx  # get second arg
-movl  %ebx, %eax      # copy first val to res
-movl  %ecx, %eax      # add second val to res
-
-# restore stack before returning
-movl  %ebp, %esp      # restore stack pointer
-popl  %ebp            # restore base pointer
-ret
-```
-
-## Files
+## File handling
 
 ### Opening a file with mode and permission
 
 - `%eax` will hold 5 for the sys call
-- address of the first character if filename should be stored in `%ebx`.
+- address of the first character if the filename should be stored in `%ebx`.
 - Read/Write indentions represented as a number should be stored in `%ecx`. You can use 0 for files you want to read from and **03101** for files you want to write to.
 - Files permission should be stored as a number in `%edx`. You can in general use **0666** for permissions.
 
@@ -499,7 +487,6 @@ __For Example :__
 - STDOUT: 1, it is a write-only file.
 - STDERR: 2, it is a write-only file.
 
-## Order of programs to read
 
-1. [exit.s](exit.s) - Program to show how to exit a program with an exit status code.
-2. [greatest.s](greatest.s) - Program to get largest integer from a list. Uses loops and conditional statements.
+# References
+

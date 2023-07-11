@@ -10,12 +10,13 @@
 
 .section .text
 _start:
- movl $4, %eax
- movl $1, %ebx
- movl $msg, %ecx
- movl $msg_len, %edx
- int $0x80
+ movl $4, %eax          # sys call for write
+ movl $1, %ebx          # set fd which is 1 for stdout
+ movl $msg, %ecx        # set buffer address
+ movl $msg_len, %edx    # set msg size
+ int $0x80              # interrupt kernel to make sys call
 
+ # exit program with successfull status code
  movl $1, %eax
  movl $0, %ebx
  int $0x80
