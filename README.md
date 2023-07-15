@@ -1,12 +1,41 @@
 [![License](https://img.shields.io/github/license/namantam1/x86-assembly)](https://github.com/namantam1/x86-assembly)
+![GitHub last commit (by committer)](https://img.shields.io/github/last-commit/namantam1/x86-assembly)
 
-# Assembly tutorial
+<!-- omit from toc -->
+# Table of Contents
+
+- [Introduction](#introduction)
+- [✨Some Basics✨ (Very Very Important)](#some-basics-very-very-important)
+- [Compiling and Execution](#compiling-and-execution)
+- [Chapters 📖](#chapters-)
+    - [First assembly program](#first-assembly-program)
+    - [Conditional Statement (if/else)](#conditional-statement-ifelse)
+    - [Loops (for/while/do while)](#loops-forwhiledo-while)
+    - [Functions](#functions)
+    - ["Hello World!" Program 👋](#hello-world-program-)
+- [Important topics](#important-topics)
+  - [Assembly Instructions](#assembly-instructions)
+  - [Data Accessing Methods](#data-accessing-methods)
+  - [File handling](#file-handling)
+    - [Opening a file with mode and permission](#opening-a-file-with-mode-and-permission)
+    - [Read/Write from/to a file using the file descriptor](#readwrite-fromto-a-file-using-the-file-descriptor)
+    - [Close a file](#close-a-file)
+    - [FD for standard and specific files](#fd-for-standard-and-specific-files)
+- [Program assembly for *64-bit* processor](#program-assembly-for-64-bit-processor)
+- [Leetcode](#leetcode)
+- [Why learn assembly language](#why-learn-assembly-language)
+- [Conclusion](#conclusion)
+- [References](#references)
+
+
+
+# Introduction
 
 This repository provides the assembly programs I wrote while studying assembly programming from many different sources, including the book _"Programming from the Ground Up"_ by _Jonathan Bartlell_.
 
 This book is highly recommended if you want to understand how a computer runs programs, how memory is allocated, and how data moves back and forth between RAM and the CPU (registers) to do calculations and save results. Additionally, you'll gain a thorough grasp of how high-level programs like C/C++ compile down to machine code which computers can understand and execute.
 
-These assembly programs in this repository are 32-bit programs for an **x86 processor** and Linux operating system with **AT&T** syntax which can be compiled using _GNU/GCC compiler_.
+These assembly programs in this repository are 32-bit and 63-bit programs for an **x86 processor** and Linux operating system with **AT&T** syntax which can be compiled using _GNU/GCC compiler_.
 
 > 👉 **Important❗** As I am new to assembly programming, the information provided in this repository might not be entirely accurate or error-free, despite my best efforts to prevent them. The knowledge contained in this repository is the result of information I've learned from a variety of sources.
 >
@@ -29,23 +58,18 @@ That's it, almost every programming language has at least these four things that
 
 Every program requires CPU and RAM to run, I'm not saying only these two are required, but for understanding the basics we need to focus on these two.
 
-Every CPU has some general purpose registers and some special registers, We can think of these registers as memory locations in the CPU. For example, the _x86 processor_ has the following general-purpose register:
+Every CPU has some general purpose registers and some special registers, We can think of these registers as memory locations in the CPU. For example, the _x86 32-bit processor_ has the general-purpose register such as `%eax`, `%ebx`, `%ecx`, `%edx`, `%edi` and `%esi`
 
-- `%eax`
-- `%ebx`
-- `%ecx`
-- `%edx`
-- `%edi`
-- `%esi`
-
-In addition to these general-purpose registers, there are also special-purpose registers, including:
+In addition to these, there are also some special-purpose registers, including:
 
 - `%ebp`: Base pointer register
 - `%esp`: Stack pointer register
 - `%eip`: Instruction pointer register
 - `%eflags`: status register
 
-Depending on the CPU architecture, each register can hold either `32-bit` or `64-bit` data. Since we can't save all variables in registers as there are a fixed number of registers in the CPU.
+Depending on the CPU architecture, each register can hold either `32-bit` for a *32-bit processor* or `64-bit` for a *64-bit processor* data. Since we can't save all variables in registers as there are a fixed number of registers in the CPU, We need to store data somewhere else.
+
+> **✨Note:** In the incoming sections, We will learn assembly for *32-bit* processor. Once you are comfortable with *32-bit* assembly programming you can move to *64-bit* assembly pragramming [here](./x86_64/README.md).
 
 RAM enters the picture at this point. Data can be kept in RAM and pointed to a register using its RAM address. As a result, during program execution, data may transfer from RAM to CPU and, following processing, may return to RAM.
 
@@ -77,7 +101,7 @@ These chapters walk you through step-by-step assembly programming using concepts
 
 You will learn it in these chapters along with an example of how it might appear in C.
 
-## First assembly program
+### First assembly program
 
 Your first program would have been a **Hello World** program for the majority of programming languages you may have learned up to this point, but developing a **Hello World** program in assembly is a bit more difficult and is covered in later chapters.
 
@@ -124,7 +148,7 @@ To verify the exit code of the above program run
 echo $? # will output 10
 ```
 
-## Conditional Statement (if/else)
+### Conditional Statement (if/else)
 
 Programming relies heavily on condition statements, such as the if, if-else, and else statements. To do this in assembly, use the **jump** instruction to jump to another section of the program. With the use of **jump**, you can make several branches that help in managing the program's workflow.
 
@@ -488,6 +512,14 @@ __For Example :__
 - STDIN:  0, it is a read-only file.
 - STDOUT: 1, it is a write-only file.
 - STDERR: 2, it is a write-only file.
+
+# Program assembly for *64-bit* processor
+
+# Leetcode
+
+# Why learn assembly language
+
+# Conclusion
 
 
 # References
