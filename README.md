@@ -9,19 +9,21 @@
 - [Compiling and Execution](#compiling-and-execution)
 - [Chapters 📖](#chapters-)
     - [First assembly program](#first-assembly-program)
+    - ["Hello World!" Program 👋](#hello-world-program-)
     - [Conditional Statement (if/else)](#conditional-statement-ifelse)
     - [Loops (for/while/do while)](#loops-forwhiledo-while)
     - [Functions](#functions)
-    - ["Hello World!" Program 👋](#hello-world-program-)
+    - [Using `C` library functions](#using-c-library-functions)
+    - [Writing Inline assembly in `C`](#writing-inline-assembly-in-c)
 - [Important topics](#important-topics)
-  - [Assembly Instructions](#assembly-instructions)
-  - [Data Accessing Methods](#data-accessing-methods)
-  - [File handling](#file-handling)
-    - [Opening a file with mode and permission](#opening-a-file-with-mode-and-permission)
-    - [Read/Write from/to a file using the file descriptor](#readwrite-fromto-a-file-using-the-file-descriptor)
-    - [Close a file](#close-a-file)
-    - [FD for standard and specific files](#fd-for-standard-and-specific-files)
-- [Program assembly for *64-bit* processor](#program-assembly-for-64-bit-processor)
+    - [Assembly Instructions](#assembly-instructions)
+    - [Data Accessing Methods](#data-accessing-methods)
+    - [File handling](#file-handling)
+      - [Opening a file with mode and permission](#opening-a-file-with-mode-and-permission)
+      - [Read/Write from/to a file using the file descriptor](#readwrite-fromto-a-file-using-the-file-descriptor)
+      - [Closing files](#closing-files)
+      - [FD for standard and specific files](#fd-for-standard-and-specific-files)
+- [Assembly program for _x86\_64 processor_ (64-bit)](#assembly-program-for-x86_64-processor-64-bit)
 - [Leetcode](#leetcode)
 - [Why learn assembly language](#why-learn-assembly-language)
 - [Conclusion](#conclusion)
@@ -31,19 +33,19 @@
 
 # Introduction
 
-This repository provides the assembly programs I wrote while studying assembly programming from many different sources, including the book _"Programming from the Ground Up"_ by _Jonathan Bartlell_.
+This repository contains the assembly programs I implemented while studying assembly programming from many different sources, including the book _"Programming from the Ground Up"_ by _Jonathan Bartlell_.
 
 This book is highly recommended if you want to understand how a computer runs programs, how memory is allocated, and how data moves back and forth between RAM and the CPU (registers) to do calculations and save results. Additionally, you'll gain a thorough grasp of how high-level programs like C/C++ compile down to machine code which computers can understand and execute.
 
-These assembly programs in this repository are 32-bit and 63-bit programs for an **x86 processor** and Linux operating system with **AT&T** syntax which can be compiled using _GNU/GCC compiler_.
+These assembly programs in this repository are 32-bit and 64-bit programs for an **x86 processor** and Linux operating system with **AT&T** syntax which can be compiled using _GNU/GCC compiler_.
 
 > 👉 **Important❗** As I am new to assembly programming, the information provided in this repository might not be entirely accurate or error-free, despite my best efforts to prevent them. The knowledge contained in this repository is the result of information I've learned from a variety of sources.
 >
-> Your comments are very appreciated if you discover any incorrect information. For it, you may create a PR. For further information, see the guidelines for your contributions.
+> Your comments are very appreciated if you discover any incorrect information. For it, you may create a PR. For further information, see the [contribution guidelines](./CONTRIBUTING.md) for your contributions.
 >
-> 👉 The reader is assumed to have a fundamental understanding of C/C++ or at least any other programming language in order to follow this assembly programming lesson. You can relate to the idea discussed in this guide more if you are proficient in C/C++. To comprehend the notion in the upcoming context, we will use the C programming language as a guide.
+> 👉 The reader is assumed to have a fundamental understanding of C/C++ in order to follow this assembly programming lesson. You can relate to the idea discussed in this guide more if you are proficient in C/C++. To comprehend the notion in the upcoming context, we will use the C programming language as base language.
 >
-> 👉 The programs in this repository can be executed using GCC compiler on Linux, Mac (not tested), Windows(by installing WSL).
+> 👉 The programs in this repository can be executed using GCC compiler on Linux and Windows(by installing WSL).
 
 # ✨Some Basics✨ (Very Very Important)
 
@@ -56,7 +58,7 @@ What does a basic program look like in C?
 
 That's it, almost every programming language has at least these four things that we can do, but the question is how the computer interprets and run it. 
 
-Every program requires CPU and RAM to run, I'm not saying only these two are required, but for understanding the basics we need to focus on these two.
+Every program requires CPU and RAM to run, I'm not saying only these two are required, but for understanding the basics we need to focus on these two only.
 
 Every CPU has some general purpose registers and some special registers, We can think of these registers as memory locations in the CPU. For example, the _x86 32-bit processor_ has the general-purpose register such as `%eax`, `%ebx`, `%ecx`, `%edx`, `%edi` and `%esi`
 
@@ -67,11 +69,11 @@ In addition to these, there are also some special-purpose registers, including:
 - `%eip`: Instruction pointer register
 - `%eflags`: status register
 
-Depending on the CPU architecture, each register can hold either `32-bit` for a *32-bit processor* or `64-bit` for a *64-bit processor* data. Since we can't save all variables in registers as there are a fixed number of registers in the CPU, We need to store data somewhere else.
-
-> **✨Note:** In the incoming sections, We will learn assembly for *32-bit* processor. Once you are comfortable with *32-bit* assembly programming you can move to *64-bit* assembly pragramming [here](./x86_64/README.md).
+Depending on the CPU architecture, each register can hold data of size either `32-bit` for a *32-bit processor* or `64-bit` for a *64-bit processor*. Since the number of variables used can be more than the number of registers, We need to store data somewhere else.
 
 RAM enters the picture at this point. Data can be kept in RAM and pointed to a register using its RAM address. As a result, during program execution, data may transfer from RAM to CPU and, following processing, may return to RAM.
+
+> **✨Note:** In the incoming sections, you will learn assembly for *32-bit* processor. Once you are comfortable with *32-bit* assembly programming you can move to *64-bit* assembly pragramming [here](./x86_64/README.md).
 
 Operating system features are accessed through system calls. These system calls are invoked by setting up registers in a special way and issuing the instruction `int $0x80` where int stands for interrupt. Kernal knows which system call you want to access by what you store in `%eax` register. Each system call has other requirements as to what needs to be stored in the different registers.
 
@@ -97,9 +99,9 @@ echo $? # prints exit code which the above program emits
 
 # Chapters 📖
 
-These chapters walk you through step-by-step assembly programming using concepts from other programming languages that you are likely already familiar with, including print, the **Hello World** program, conditions, loops, and functions.
+These chapters walk you through step-by-step assembly programming using concepts from other programming languages that you are likely already familiar with conditions, loops, functions, printing to console and many others.
 
-You will learn it in these chapters along with an example of how it might appear in C.
+You will learn it in these chapters along with the example of how you write it in `C` language.
 
 ### First assembly program
 
@@ -146,6 +148,38 @@ To verify the exit code of the above program run
 
 ```bash
 echo $? # will output 10
+```
+
+### "Hello World!" Program 👋
+
+Exit status codes were previously used as a program's output, however, they shouldn't be used for this. You must be aware by this point that a system call, such as the one you just made by setting the `%eax` register to 1, is required to execute any type of I/O. In the same way, you would need to make a system call to print something to the console. 
+
+To accomplish this, set the `%eax` register to 4 to initiate a **write** system call. You need to set the `%ebx` register to the file descriptor value, which is 1 for `stdout`, the `%ecx` register to the location of the buffer, and the `%edx` register to the size of the message to print.
+
+For a thorough description of opening, closing, reading, and writing files, refer to the [files](#files) section.
+
+Here is an example of an assembly program
+
+```s
+.globl _start
+
+
+.section .data
+ msg:
+  .ascii "Hello World\n"
+
+.section .text
+_start:
+ movl $4, %eax          # sys call for write
+ movl $1, %ebx          # set fd which is 1 for stdout
+ movl $msg, %ecx        # set buffer address
+ movl $12, %edx         # set msg size
+ int $0x80              # interrupt kernel to make sys call
+
+ # exit program with successfull status code
+ movl $1, %eax
+ movl $0, %ebx
+ int $0x80
 ```
 
 ### Conditional Statement (if/else)
@@ -247,7 +281,7 @@ In a function, you can access all of the data by using a base pointer using a di
 **✨Important✨:** Following are the step to set up function parameters, define a function, call the function, and give control back to the point where it is called.
 
 1. push function parameters in reverse order using `pushl` instruction.
-1. call the function by issue a `call` instruction with function name.
+1. call the function by issuing a `call` instruction with the function name.
 1. define function anywhere in the program file as `.type <function_name>, @function`.
 1. start the function block with the function name.
 1. Now the first two instructions should be to store the old base pointer in the stack and make the stack current position your base point.
@@ -308,39 +342,9 @@ popl  %ebp            # restore base pointer
 ret
 ```
 
-### "Hello World!" Program 👋
+### Using `C` library functions
 
-Exit status codes were previously used as a program's output, however, they shouldn't be used for this. You must be aware by this point that a system call, such as the one you just made by setting the `%eax` register to 1, is required to execute any type of I/O. In the same way, you would need to make a system call to print something to the console. 
-
-To accomplish this, set the `%eax` register to 4 to initiate a **write** system call. You need to set the `%ebx` register to the file descriptor value, which is 1 for `stdout`, the `%ecx` register to the location of the buffer, and the `%edx` register to the size of the message to print.
-
-For a thorough description of opening, closing, reading, and writing files, refer to the [files](#files) section.
-
-Here is an example of an assembly program
-
-```s
-.globl _start
-
-
-.section .data
- msg:
-  .ascii "Hello World\n"
-
-.section .text
-_start:
- movl $4, %eax          # sys call for write
- movl $1, %ebx          # set fd which is 1 for stdout
- movl $msg, %ecx        # set buffer address
- movl $12, %edx         # set msg size
- int $0x80              # interrupt kernel to make sys call
-
- # exit program with successfull status code
- movl $1, %eax
- movl $0, %ebx
- int $0x80
-```
-
-The program mentioned above uses the system call `write` to print a message to the console, although this is not advised because it is difficult to fill up each block of buffer with an ASCII value if you wish to display a dynamic message.
+The **"Hello World"** program mentioned above uses the system call `write` to print a message to the console, although this is not advised because it is difficult to fill up each block of buffer with an ASCII value if you wish to display a dynamic message.
 
 Therefore, we can utilize the standard `printf` function with signature `int printf(const char *restrict format, ...);` provided by `libc` rather than making a direct sys call.
 
@@ -377,7 +381,7 @@ movl $0, %ebx
 int $0x80
 ```
 
-To compile above code you need to tell the linker to link `libc` so that you can utilize the `printf` function provided by it. We can compile, link and execute above code as:
+To compile the above code you need to tell the linker to link `libc` so that you can utilize the `printf` function provided by it. We can compile, link and execute the above code as:
 
 ```bash
 as -32 main.asm -o main.out
@@ -391,9 +395,13 @@ You can see that the format string is terminated with a `NULL` since `printf` re
 
 > 👉 Similary, You can use other functions provided in `libc`, and to get their signature you can check their **man** page.
 
+### Writing Inline assembly in `C`
+
+
+
 # Important topics
 
-## Assembly Instructions
+### Assembly Instructions
 
 - __`movl` :__ It has two operands, source and destination i.e. `movl $src_reg, %dest_reg`.
 
@@ -410,7 +418,7 @@ You can see that the format string is terminated with a `NULL` since `printf` re
 - __`idivl` :__ Requires that dividend in `%eax` and `%edx` be zero, the quotient is then transferred to `%eax` and the remainder to `%edx`. However, the divisor can be any register or memory location.
 
 
-## Data Accessing Methods
+### Data Accessing Methods
 
 The general form of memory address reference is:
 
@@ -467,9 +475,9 @@ You can access data in different ways.
    movl 4(%eax), %ebx
    ```
 
-## File handling
+### File handling
 
-### Opening a file with mode and permission
+#### Opening a file with mode and permission
 
 - `%eax` will hold 5 for the sys call
 - address of the first character if the filename should be stored in `%ebx`.
@@ -486,14 +494,14 @@ int $0x80
 The above instruction will return a file description in `%eax`. This number you can use to refer to this file throughout your program.
 
 
-### Read/Write from/to a file using the file descriptor
+#### Read/Write from/to a file using the file descriptor
 
 - read and write is a system call with values 3 and 4 respectively.
 - fd should be stored in `%ebx`.
 - The address of a buffer for the data that is to be read is stored in `%ecx`.
 - The size of the buffer should be stored in `%edx`. `.bss.read` will return either number of bytes read or the error code. In the case of write, `%eax` will contain the number of bytes written or an error code.
 
-### Close a file
+#### Closing files
 
 The close system call is 6. The only parameter to `close` is the fd placed in `%ebx`.
 
@@ -507,15 +515,21 @@ __For Example :__
                       # can use as a buffer
 ```
 
-### FD for standard and specific files
+#### FD for standard and specific files
 
 - STDIN:  0, it is a read-only file.
 - STDOUT: 1, it is a write-only file.
 - STDERR: 2, it is a write-only file.
 
-# Program assembly for *64-bit* processor
+# Assembly program for _x86_64 processor_ (64-bit)
+
+Since writing assembly in `32-bit` mode is simple, up until now, our main focus has been on learning assembly programs and developing some fundamental programming skills.
+
+When developing assembly programs, there are no significant differences between `32-bit` and `64-bit` modes. Check out the 'x86_64' directory and accompanying [instructions](./x86_64/README.md#inline-assembly-in-c) to learn assembly in '64-bit' mode.
 
 # Leetcode
+
+Once you have mastered `x86_64` assembly, you can write `inline assembly` in `C` to solve problems on `leetcode`. The `leetcode` directory contains some solutions along with their explanations.
 
 # Why learn assembly language
 
@@ -529,5 +543,6 @@ __For Example :__
 - https://developer.arm.com/documentation/100067/0612/Compiler-specific-Function--Variable--and-Type-Attributes/--attribute----naked---function-attribute
 - https://godbolt.org/
 - https://www.geeksforgeeks.org/compile-32-bit-program-64-bit-gcc-c-c/
+- https://gist.github.com/mishurov/6bcf04df329973c15044
 
 - https://stackoverflow.com/questions/21679131/error-invalid-instruction-suffix-for-push#:~:text=1%20Answer&text=The%20error%20you're%20getting,bit%20and%2064%2Dbit%20immediates.
