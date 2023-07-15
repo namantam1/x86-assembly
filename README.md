@@ -1,3 +1,5 @@
+[![License](https://img.shields.io/github/license/namantam1/x86-assembly)](https://github.com/namantam1/x86-assembly)
+
 # Assembly tutorial
 
 This repository provides the assembly programs I wrote while studying assembly programming from many different sources, including the book _"Programming from the Ground Up"_ by _Jonathan Bartlell_.
@@ -490,3 +492,10 @@ __For Example :__
 
 # References
 
+- https://www.lri.fr/~filliatr/ens/compil/x86-64.pdf
+- https://blog.rchapman.org/posts/Linux_System_Call_Table_for_x86_64/
+- https://developer.arm.com/documentation/100067/0612/Compiler-specific-Function--Variable--and-Type-Attributes/--attribute----naked---function-attribute
+- https://godbolt.org/
+- https://www.geeksforgeeks.org/compile-32-bit-program-64-bit-gcc-c-c/
+
+- https://stackoverflow.com/questions/21679131/error-invalid-instruction-suffix-for-push#:~:text=1%20Answer&text=The%20error%20you're%20getting,bit%20and%2064%2Dbit%20immediates.

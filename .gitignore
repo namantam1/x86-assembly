@@ -1,2 +1,5 @@
+.vscode
+.cph
 *.out
+*.o
 run
