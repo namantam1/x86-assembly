@@ -16,7 +16,7 @@
     - [Using `C` library functions](#using-c-library-functions)
     - [Writing Inline assembly in `C`](#writing-inline-assembly-in-c)
 - [Important topics](#important-topics)
-    - [Assembly Instructions](#assembly-instructions)
+    - [Some frequently used assembly Instructions](#some-frequently-used-assembly-instructions)
     - [Data Accessing Methods](#data-accessing-methods)
     - [File handling](#file-handling)
       - [Opening a file with mode and permission](#opening-a-file-with-mode-and-permission)
@@ -25,8 +25,10 @@
       - [FD for standard and specific files](#fd-for-standard-and-specific-files)
 - [Assembly program for _x86\_64 processor_ (64-bit)](#assembly-program-for-x86_64-processor-64-bit)
 - [Leetcode](#leetcode)
-- [Why learn assembly language](#why-learn-assembly-language)
-- [Conclusion](#conclusion)
+- [Tools](#tools)
+    - [godbolt.org](#godboltorg)
+    - [cppinsights.io](#cppinsightsio)
+- [Why learn assembly language?](#why-learn-assembly-language)
 - [References](#references)
 
 
@@ -143,8 +145,9 @@ _start:
 
 - `int $0x80` is used to interrupt the kernel and issue the system call.
 
+> Every instruction's `l` suffix informs the CPU that the register width to utilize is 32 bits. Although not always necessary, it becomes crucial when programming assembly in `64-bit.`
 
-To verify the exit code of the above program run
+To verify the exit code of the above program compile and run, then
 
 ```bash
 echo $? # will output 10
@@ -397,11 +400,47 @@ You can see that the format string is terminated with a `NULL` since `printf` re
 
 ### Writing Inline assembly in `C`
 
+There are a number of ways to write inline assembly in the `C` programming language, but the one given here is sufficient for the needs of the moment.
 
+You can write assembly code to implement a function. However, you must inform the compiler that the code contained in the function body is raw assembly code. For that reason, we add `__attribute__((naked))` before a function definition. Get more info about it [here](https://developer.arm.com/documentation/100067/0612/Compiler-specific-Function--Variable--and-Type-Attributes/--attribute----naked---function-attribute). After that we use `__asm__` to encapsulate our assembly code.
+
+For example:
+
+```c
+// add.c
+#include <stdio.h>
+
+__attribute__((naked)) 
+int sum(int a, int b) {
+    __asm__(
+        "pushl %ebp;"
+        "movl %esp, %ebp;"
+        "movl 8(%ebp), %eax;"  // s = a
+        "addl 12(%ebp), %eax;"  // s += b
+        "movl %ebp, %esp;"
+        "popl %ebp;"
+        "ret;"
+    );
+}
+
+int main() {
+    printf("%d\n", sum(10, 20));
+    return 0;
+}
+```
+
+To compile and run this code
+
+```bash
+# using -m32 to compile in 32-bit mode
+gcc -m32 add.c -o add.out
+./add.out
+# output: 30
+```
 
 # Important topics
 
-### Assembly Instructions
+### Some frequently used assembly Instructions
 
 - __`movl` :__ It has two operands, source and destination i.e. `movl $src_reg, %dest_reg`.
 
@@ -417,6 +456,7 @@ You can see that the format string is terminated with a `NULL` since `printf` re
 
 - __`idivl` :__ Requires that dividend in `%eax` and `%edx` be zero, the quotient is then transferred to `%eax` and the remainder to `%edx`. However, the divisor can be any register or memory location.
 
+> `l` suffix after every intruction tell cpu that with of register to use is 32-bit.
 
 ### Data Accessing Methods
 
@@ -548,19 +588,49 @@ Below is the list of programs:
 |  11.  |                                [single number](https://leetcode.com/problems/single-number/)                                |  easy  |        array, bit manipulation         |     bit manipulation,loop      |   [open](./leetcode/single_number.c)    |
 |  11.  |                                      [two sum](https://leetcode.com/problems/two-sum/)                                      |  easy  |           array, hash table            |     condition ,nested loop     |      [open](./leetcode/two_sum.c)       |
 
+# Tools
 
-# Why learn assembly language
+### [godbolt.org](https://godbolt.org/)
 
-# Conclusion
+This is a very amazing tool which compiles code in `C/C++` to assembly code for various versions/type of compilers. Using this tool you can see how you `C/C++` program would look like in assembly. It can also generate various flavours of assembly code such as we studied `AT&T` syntax or `Intel` syntax of assembly.
 
+The best combination of option for our code is like:
+
+- 32-bit:
+  - set compiler to `x86-64 gcc 4.1.2`
+  - set compiler options to `-m32 -O2` where `O2` is optimization level.
+  - Disable `intel asm syntax` from **output** dropdown.
+
+- 64-bit:
+  - set compiler to `x86-64 gcc 4.1.2`
+  - set compiler options to `-m64 -O2` where `O2` is optimization level.
+  - Disable `intel asm syntax` from **output** dropdown.
+
+You can even compare side by side various assembly code generated for various flavours.
+
+### [cppinsights.io](https://cppinsights.io/)
+
+This tool simulates how a `C++` program might look if it were written in the `C` programming language.
+
+
+# Why learn assembly language?
+
+👉 By learning assembly language you will have a better understanding of operating and you would know how your code is compiled and run behind the scene.
+
+👉 You can wisely decide to prevent yourself from writing unoptimized code as well as from premature optimization. 
+
+👉  By analyzing assembly code, you can identify vulnerabilities, and develop exploits in software.
+
+👉 You can reverse engineer software, believe me, once you can understand assembly, reverse engineering becomes easy.
 
 # References
 
-- https://www.lri.fr/~filliatr/ens/compil/x86-64.pdf
-- https://blog.rchapman.org/posts/Linux_System_Call_Table_for_x86_64/
-- https://developer.arm.com/documentation/100067/0612/Compiler-specific-Function--Variable--and-Type-Attributes/--attribute----naked---function-attribute
-- https://godbolt.org/
-- https://www.geeksforgeeks.org/compile-32-bit-program-64-bit-gcc-c-c/
-- https://gist.github.com/mishurov/6bcf04df329973c15044
+- [How to compile 32-bit program on 64-bit gcc in C and C++](https://www.geeksforgeeks.org/compile-32-bit-program-64-bit-gcc-c-c/)
+- [AT&T assembly syntax and IA-32 instructions](https://gist.github.com/mishurov/6bcf04df329973c15044)
+- [\_\_attribute\_\_((naked)) function attribute](https://developer.arm.com/documentation/100067/0612/Compiler-specific-Function--Variable--and-Type-Attributes/--attribute----naked---function-attribute)
+- [Notes on x86-64 programming](https://www.lri.fr/~filliatr/ens/compil/x86-64.pdf)
+- [x86-64 Machine-Level Programming](https://www.cs.cmu.edu/~fp/courses/15213-s07/misc/asm64-handout.pdf) by *Randal E. Bryant*
+and *David R. O’Hallaron*
+- [LINUX SYSTEM CALL TABLE FOR X86 64](https://blog.rchapman.org/posts/Linux_System_Call_Table_for_x86_64/)
 
-- https://stackoverflow.com/questions/21679131/error-invalid-instruction-suffix-for-push#:~:text=1%20Answer&text=The%20error%20you're%20getting,bit%20and%2064%2Dbit%20immediates.
+- [Error: invalid instruction suffix for `push`](https://stackoverflow.com/questions/21679131/error-invalid-instruction-suffix-for-push#:~:text=1%20Answer&text=The%20error%20you're%20getting,bit%20and%2064%2Dbit%20immediates).

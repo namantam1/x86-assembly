@@ -1,4 +1,10 @@
+/*
+auther: Naman Tamrakar
+date: 2023-07-20
+*/
+
 #include <stdio.h>
+
 
 __attribute__((naked)) 
 int sum(int a, int b) {
