@@ -1,3 +1,14 @@
+/*
+auther: Naman Tamrakar
+date: 2023-07-19
+
+level: easy
+url: https://leetcode.com/problems/plus-one/
+question: You are given a large integer represented as an integer array digits, where each digits[i] is the ith digit of the integer. The digits are ordered from most significant to least significant in left-to-right order. The large integer does not contain any leading 0's.
+
+Increment the large integer by one and return the resulting array of digits.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -23,67 +34,87 @@ int* plusOne_c(int* arr, int n, int* rs) {
 __attribute__((naked))
 int *plusOne(int *arr, int n, int *rs) {
     __asm__(
-        "sub $64, %rsp;"
-        "mov %rdi, 16(%rsp);"
-        "movl %esi, 24(%rsp);"
-        "mov %rdx, 32(%rsp);"
+        "pushq %rbp;"
+        "movq %rsp, %rbp;"
+        "sub $40, %rsp;"
 
+        "mov %rdi, -8(%rbp);"
+        "movl %esi, -16(%rbp);"
+        "mov %rdx, -24(%rbp);"
+
+        // *rs = n;
         "movl %esi, (%rdx);"
-        
+        // int *ans = malloc(sizeof(int) * n);
         "mov %rsi, %rdi;"
         "imul $4, %rdi;"
         "call malloc;"
-        "mov %rax, 40(%rsp);"
+        "mov %rax, -32(%rbp);"
 
+        // int c = 1, i = n-1;
         "movl $1, %ecx;"
-        "movl 24(%rsp), %edi;"
+        "movl -16(%rbp), %edi;"
         "decl %edi;"
 
     "l1:;"
+        // while (i>=0) {
         "cmpl $0, %edi;"
         "jl l1_end;"
 
-        "mov 16(%rsp), %rsi;"
+        // c += arr[i];
+        "mov -8(%rbp), %rsi;"
         "addl (%rsi,%rdi,4), %ecx;"
 
+        // ans[i] = c % 10;
+        // c /= 10;
         "xor %rdx, %rdx;"
         "mov %rcx, %rax;"
         "mov $10, %rsi;"
         "idiv %rsi;"
         // quotient in %rax and remainder in %rdx
 
-        "mov 40(%rsp), %rsi;"
+        "mov -32(%rbp), %rsi;"
         "movl %edx, (%rsi,%rdi,4);"
         "movl %eax, %ecx;"
 
+        // i--;
         "decl %edi;"
         "jmp l1;"
 
     "l1_end:;"
+        // if (c) {
         "cmp $0, %ecx;"
         "je end;"
 
-        "movl %ecx, 48(%rsp);"
+        // store value of c in stack
+        "movl %ecx, -40(%rbp);"
 
-        "movl 24(%rsp), %esi;"
+        // *rs = n + 1;
+        "movl -16(%rbp), %esi;"
         "incl %esi;"
-        "mov 32(%rsp), %rdx;"
+        "mov -24(%rbp), %rdx;"
         "movl %esi, (%rdx);"
         
-        "mov 40(%rsp), %rdi;"
+        // ans = realloc(ans, sizeof(int) * (n+1));
+        "mov -32(%rbp), %rdi;"
         "imul $4, %rsi;"
         "call realloc;"
-        "mov %rax, 40(%rsp);"
+        "mov %rax, -32(%rbp);"
 
-        "movl 24(%rsp), %esi;"
+        //     ans[n] = 0;
+        //     ans[0] = c;
+        "movl -16(%rbp), %esi;"
         "movl $0, (%rax,%rsi,4);"
 
-        "movl 48(%rsp), %ecx;"
+        "movl -40(%rbp), %ecx;"
         "movl %ecx, (%rax);"
 
     "end:;"
-        "mov 40(%rsp), %rax;"
-        "add $64, %rsp;"
+        // return ans;
+        "mov -32(%rbp), %rax;"
+
+        "add $40, %rsp;"
+        "movq %rbp, %rsp;"
+        "popq %rbp;"
         "ret;"
     );
 }

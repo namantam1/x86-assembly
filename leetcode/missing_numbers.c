@@ -1,3 +1,12 @@
+/*
+auther: Naman Tamrakar
+date: 2023-07-19
+
+level: easy
+url: https://leetcode.com/problems/missing-number/
+question: Given an array nums containing n distinct numbers in the range [0, n], return the only number in the range that is missing from the array.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -14,18 +23,23 @@ int missingNumber_c(int *arr, int n) {
 __attribute__((naked))
 int missingNumber(int* arr, int n){
     __asm__(
-            "mov %rsi, %rax;"
-            "add $1, %rax;"
-            "imul %rsi, %rax;"
-            "shr $1, %rax;"
+            // int s = n * (n + 1) / 2;
+            "movq %rsi, %rax;"
+            "incq %rax;"    // n+1
+            "imul %rsi, %rax;" // n * (n+1)
+            "shr $1, %rax;" // divide by by right shift
 
+            // int i = 0;
             "movl $0, %ecx;"
 
         "l1:;"
+            // while (i < n) {
             "cmpl %esi, %ecx;"
             "je end;"
 
-            "sub (%rdi,%rcx,4), %rax;"
+            // s -= arr[i];
+            "subq (%rdi,%rcx,4), %rax;"
+            // i++;
             "incl %ecx;"
             "jmp l1;"
 

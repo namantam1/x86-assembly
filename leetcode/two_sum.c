@@ -1,7 +1,21 @@
+/*
+auther: Naman Tamrakar
+date: 2023-07-19
+
+level: easy
+url: https://leetcode.com/problems/two-sum/
+question: Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.
+
+You may assume that each input would have exactly one solution, and you may not use the same element twice.
+
+You can return the answer in any order.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
-int *sol(int *a, int n, int k) {
+int *sol(int *a, int n, int k, int *r) {
+    *r = 2;
     int *ans = malloc(sizeof(int) * 2);
     int i=0;
     while (i < n) {
@@ -22,62 +36,68 @@ int *sol(int *a, int n, int k) {
 __attribute__((naked)) 
 int* sum(int *a, int n, int k, int *r) {
     __asm__(
-            "push %rbp;"
-            "mov %rsp, %rbp;"
-            "sub $64, %rsp;"
 
-            "movq $2, (%rcx);"
+        "pushq %rbp;"
+        "movq %rsp, %rbp;"
+        "sub $32, %rsp;"
 
-            "mov %rdi, 16(%rsp);"
-            "mov %rsi, 24(%rsp);"
-            "mov %rdx, 32(%rsp);"
+        // *r = 2;
+        "movq $2, (%rcx);"
 
-            "mov $8, %rdi;"
-            "call malloc;"
+        // store rest params in stack
+        "movq %rdi, -8(%rbp);"
+        "movl %esi, -16(%rbp);"
+        "movl %edx, -24(%rbp);"
 
-            "mov 16(%rsp), %rdi;"
-            "mov 24(%rsp), %rsi;"
-            "mov 32(%rsp), %rdx;"
+        "movq $8, %rdi;"
+        "call malloc;"
+        "movq %rax, -32(%rbp);"
 
+        // i=0
+        "movl $0, %edi;"
 
-            "mov $0, %r8;"
+    "l1:;"
+        "cmpl -16(%rbp), %edi;"
+        "je end;"
 
-        "l1:;"
-            "cmp %rsi, %r8;"
-            "je end;"
+        "movl %edi, %esi;"
+        "incl %esi;"
 
-            "mov %r8, %r9;"
-            "add $1, %r9;"
-            "jmp l2;"
+    "l2:;"
+        "cmpl -16(%rbp), %esi;"
+        "je l2_end;"
 
-        "l1_p:;"
-            "add $1, %r8;"
-            "jmp l1;"
+        "movq -8(%rbp), %rcx;" // a
+        "movl (%rcx,%rdi,4), %eax;" // a[i]
+        "addl (%rcx,%rsi,4), %eax;" // a[i] + a[j]
 
-        "l2:;"
-            "cmp %rsi, %r9;"
-            "je l1_p;"
+        "cmpl %eax, -24(%rbp);"
+        "jne l2_c;"
 
-            "mov (%rdi,%r8,4), %r10d;"
-            "add (%rdi,%r9,4), %r10d;"
+        "movq -32(%rbp), %rdx;" // ans
+        "movl %edi, (%rdx);" // ans[0] = i
+        "movl %esi, 4(%rdx);" // ans[1] = j
+        "jmp end;"
+    
+    "l2_c:;"
+        // j++;
+        "incl %esi;"
+        "jmp l2;"
 
-            "cmp %edx, %r10d;"
-            "je done;"
+    "l2_end:;"
+        // i++;
+        "incl %edi;"
+        "jmp l1;"
 
-            "add $1, %r9;"
-            "jmp l2;"
+    "end:;"
+        // ans
+        "movq -32(%rbp), %rax;"
 
-        "done:;"
-            "mov $0, %rsi;"
-            "mov %r8, (%rax,%rsi,4);"
-            "mov $1, %rsi;"
-            "mov %r9, (%rax,%rsi,4);"
-
-        "end:;"
-            "add $64, %rsp;"
-            "mov %rbp, %rsp;"
-            "pop %rbp;"
-            "ret;"
+        // restore stack
+        "add $32, %rsp;"
+        "movq %rbp, %rsp;"
+        "popq %rbp;"
+        "ret;"
     );
 }
 
@@ -94,8 +114,8 @@ int main() {
     int r = -1;
 
     int *ans = sum(arr, n, k, &r);
-    printf("%d %d %d", r, ans[0], ans[1]);
+    printf("%d %d\n", ans[0], ans[1]);
     free(arr);
-    // free(ans);
+    free(ans);
     return 0;
 }

@@ -99,7 +99,7 @@ echo $? # prints exit code which the above program emits
 
 # Chapters 📖
 
-These chapters walk you through step-by-step assembly programming using concepts from other programming languages that you are likely already familiar with conditions, loops, functions, printing to console and many others.
+These chapters walk you through step-by-step assembly programming using concepts from other programming languages that you are likely already familiar with such as conditions, loops, functions, printing to console and many others.
 
 You will learn it in these chapters along with the example of how you write it in `C` language.
 
