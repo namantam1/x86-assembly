@@ -1,3 +1,7 @@
+# auther: Naman Tamrakar
+# date: 06.07.2023
+# description: Program to demonstrate factorial function in assembly.
+
 .globl _start
 .section .text
 
@@ -15,18 +19,20 @@ fact:
  push %ebp                  # push base pointer into stack
  movl %esp, %ebp            # point base pointer to stack
 
- movl 8(%ebp), %eax         # get first
+ movl 8(%ebp), %eax         # get first param
 
- cmpl $1, %eax
- je fact_ret
+ cmpl $1, %eax              # if value is 1 return from with this value only
+ je fact_ret                # jump to function return block
 
- decl %eax
- pushl %eax
- call fact
-
- imull 8(%ebp), %eax
+ decl %eax                  # decrease value by 1
+ pushl %eax                 # put this value on stack
+ call fact                  # call function
+ addl $4, %esp              # move stack pointer back, even if we do it, function will work 
+                            # correctly as we have store stack refrence in %ebp which will restore stack in end correctly
+ imull 8(%ebp), %eax        # multiply return value to current
 
 fact_ret:
+ # restore stack
  movl %ebp, %esp
  popl %ebp
  ret

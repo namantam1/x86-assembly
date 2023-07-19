@@ -1,3 +1,7 @@
+# auther: Naman Tamrakar
+# date: 06.07.2023
+# description: A sample program to show how to make a write system call to print buffer in console.
+
 .globl _start
 
 

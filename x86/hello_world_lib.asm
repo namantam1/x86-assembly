@@ -1,3 +1,7 @@
+# auther: Naman Tamrakar
+# date: 06.07.2023
+# description: A sample program to show usage of lib-c functions  by calling lib-c printf function
+
 .globl _start
 
 .section .data

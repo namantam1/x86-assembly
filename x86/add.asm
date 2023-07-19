@@ -6,14 +6,14 @@
 .section .text
 
 _start:
- pushl $10           # push second value in stack register %esp first
- pushl $5            # push first value in stack register %esp second
- call  add           # call add function
- movl  %eax, %ebx    # push return value in register %eax into %ebx
- movl  $1, %eax      # exit sys call
- int   $0x80         # invoke kernal
+ pushl $10              # push second value in stack register %esp first
+ pushl $5               # push first value in stack register %esp second
+ call  add              # call add function
+ movl  %eax, %ebx       # push return value in register %eax into %ebx
+ movl  $1, %eax         # exit sys call
+ int   $0x80            # invoke kernal
 
-.type add, @function # define function
+.type add, @function    # define function
 
 add:
  pushl %ebp            # push the old base pointer into stack

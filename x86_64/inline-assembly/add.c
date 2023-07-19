@@ -3,8 +3,8 @@
 __attribute__((naked)) 
 int sum(int a, int b) {
     __asm__(
-        "movl %edi, %eax;"
-        "add %esi, %eax;"
+        "movl %edi, %eax;" // s = a
+        "add %esi, %eax;"  // s += b
         "ret;"
     );
 }
