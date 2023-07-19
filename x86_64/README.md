@@ -15,6 +15,8 @@ Additionally, there are eight `64-bit` SIMD (Single Instruction, Multiple Data) 
 |   long int    |    Quad word    |   q    |      8       |
 |    char *     |    Quad word    |   q    |      8       |
 
+**The transition to 64-bit should go smoothly if you have a solid understanding of 32-bit assembly. For more information, please click on the first two references listed below.**
+
 # References
 
 - [Notes on x86-64 programming](https://www.lri.fr/~filliatr/ens/compil/x86-64.pdf)

@@ -12,7 +12,7 @@
     - ["Hello World!" Program 👋](#hello-world-program-)
     - [Conditional Statement (if/else)](#conditional-statement-ifelse)
     - [Loops (for/while/do while)](#loops-forwhiledo-while)
-    - [Functions](#functions)
+    - [Functions (Procedures)](#functions-procedures)
     - [Using `C` library functions](#using-c-library-functions)
     - [Writing Inline assembly in `C`](#writing-inline-assembly-in-c)
 - [Important topics](#important-topics)
@@ -24,6 +24,9 @@
       - [Closing files](#closing-files)
       - [FD for standard and specific files](#fd-for-standard-and-specific-files)
 - [Assembly program for _x86\_64 processor_ (64-bit)](#assembly-program-for-x86_64-processor-64-bit)
+- [Examples](#examples)
+    - [x86 (32-bit)](#x86-32-bit)
+    - [x86\_64 (64-bit)](#x86_64-64-bit)
 - [Leetcode](#leetcode)
 - [Tools](#tools)
     - [godbolt.org](#godboltorg)
@@ -269,7 +272,7 @@ end:
  int $0x80       # interrupt kernel
 ```
 
-### Functions
+### Functions (Procedures)
 
 Functions are a crucial component of programming that helps in the development of code that is reusable, modular, and maintained. You must have been taught that when we call a function stack is used internally to keep track of data used from where it is called and of functions while studying functions in other programming languages. You will see how this is done in assembly.
 
@@ -566,6 +569,32 @@ __For Example :__
 Since writing assembly in `32-bit` mode is simple, up until now, our main focus has been on learning assembly programs and developing some fundamental programming skills.
 
 When developing assembly programs, there are no significant differences between `32-bit` and `64-bit` modes. Check out the 'x86_64' directory and accompanying [instructions](./x86_64/README.md#inline-assembly-in-c) to learn assembly in '64-bit' mode.
+
+# Examples
+
+### x86 (32-bit)
+
+|  sno  |                     program                      |                 topic                 |
+| :---: | :----------------------------------------------: | :-----------------------------------: |
+|   1   |            [exit.asm](./x86/exit.asm)            |             exit sys call             |
+|   2   |     [hello_world.asm](./x86/hello_world.asm)     |            write sys call             |
+|   3   | [hello_world_lib.asm](./x86/hello_world_lib.asm) |          libc function call           |
+|   4   |        [greatest.asm](./x86/greatest.asm)        |    array(buffer), loops, condition    |
+|   5   |             [add.asm](./x86/add.asm)             |    function(procedure), call stack    |
+|   6   |       [factorial.asm](./x86/factorial.asm)       | function, recursion, condition, loops |
+|   7   |      [power_iter.asm](./x86/power_iter.asm)      |      function, loops, condition       |
+|   8   |       [power_rec.asm](./x86/power_rec.asm)       | function, recursion, loops, condition |
+
+### x86_64 (64-bit)
+
+|  sno  |                        program                        |                       topic                        |
+| :---: | :---------------------------------------------------: | :------------------------------------------------: |
+|   1   |              [sum.asm](./x86_64/sum.asm)              |      buffer, loops, condition, libc function       |
+|   2   |       [add.asm](./x86_64/inline-assembly/add.c)       |                     inline asm                     |
+|   3   |   [add_arr.asm](./x86_64/inline-assembly/add_arr.c)   |        buffer, loops, condition, inline asm        |
+|   4   |    [2d_arr.asm](./x86_64/inline-assembly/2d_arr.c)    |    nested buffer, loops, condition, inline asm     |
+|   5   |    [malloc.asm](./x86_64/inline-assembly/malloc.c)    |        malloc, loops, condition, inline asm        |
+|   6   | [malloc_2d.asm](./x86_64/inline-assembly/malloc_2d.c) | malloc for 2d buffer, loops, condition, inline asm |
 
 # Leetcode
 
