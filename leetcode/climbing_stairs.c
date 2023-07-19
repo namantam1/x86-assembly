@@ -26,14 +26,14 @@ int climbStairs_c(int n) {
     // return ans;
 
 
-    // int pre_pre = 1, pre = 1, i = 2;
-    // while (i<=n) {
-    //     int tmp = pre + pre_pre;
-    //     pre_pre = pre;
-    //     pre = tmp;
-    //     i++;
-    // }
-    // return pre;
+    int pre_pre = 1, pre = 1, i = 2;
+    while (i<=n) {
+        int tmp = pre + pre_pre;
+        pre_pre = pre;
+        pre = tmp;
+        i++;
+    }
+    return pre;
 }
 
 __attribute__((naked))

@@ -46,16 +46,16 @@ int minCostClimbingStairs(int* v, int n){
         "movq %rsp, %rbp;"
         "sub $64, %rsp;"
 
-        "mov %rdi, -8(%rbp);"
-        "movl %esi, -16(%rbp);"
+        "mov %rdi, -8(%rbp);"   // v
+        "movl %esi, -16(%rbp);" // n
 
         // int *t = malloc(n * sizeof(int));
         "mov %rsi, %rdi;"
         "imul $4, %rdi;"
         "call malloc;"
-        "mov %rax, -24(%rbp);"
+        "mov %rax, -24(%rbp);" // t
 
-        "movl -16(%rbp), %edi;"
+        "movl -16(%rbp), %edi;" // n
         // t[n-1] = 0
         "decl %edi;"
         "movl $0, (%rax,%rdi,4);"
@@ -104,28 +104,27 @@ int minCostClimbingStairs(int* v, int n){
 
     "l1_end:;"
         // int a = t[0]+v[0];
+        "movl $0, %esi;"            // 0
+        "mov -8(%rbp), %rdx;"       // v
+        "movl (%rdx,%rsi,4), %edx;" // v[0]
+        "addl (%rax,%rsi,4), %edx;" // v[0] + t[0]
+
         // int b = t[1]+v[1];
-        // int ans;
-        "movl $0, %esi;"
-        "mov -8(%rbp), %rdx;"
-        "movl (%rdx,%rsi,4), %edx;"
-        "addl (%rax,%rsi,4), %edx;"
-        "incl %esi;"
-        "mov -8(%rbp), %rcx;"
-        "movl (%rcx,%rsi,4), %ecx;"
-        "addl (%rax,%rsi,4), %ecx;"
+        "incl %esi;"                // 1
+        "mov -8(%rbp), %rcx;"       // v
+        "movl (%rcx,%rsi,4), %ecx;" // v[1]
+        "addl (%rax,%rsi,4), %ecx;" // v[1] + t[1]
 
         // if (a < b)
-        //     ans = a;
-        // else
-        //     ans = b;
         "cmpl %edx, %ecx;"
         "jl if2;"
 
+        // else ans = b;
         "movl %edx, -32(%rbp);"
         "jmp end;"
 
     "if2:;"
+        // ans = a;
         "movl %ecx, -32(%rbp);"
 
     "end:;"

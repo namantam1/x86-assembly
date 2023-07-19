@@ -39,9 +39,11 @@ int minOperations_c(int n) {
 __attribute__((naked))
 int minOperations(int n) {
     __asm__(
+        // call recursive function and return its value
         "call minop;"
         "ret;"
 
+    // define recursive function first
     "minop:;"
         "pushq %rbp;"
         "movq %rsp, %rbp;"

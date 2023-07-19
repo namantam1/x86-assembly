@@ -529,7 +529,25 @@ When developing assembly programs, there are no significant differences between 
 
 # Leetcode
 
-Once you have mastered `x86_64` assembly, you can write `inline assembly` in `C` to solve problems on `leetcode`. The `leetcode` directory contains some solutions along with their explanations.
+Once you have mastered `x86_64` assembly, you can write `inline assembly` in `C` to solve problems on `leetcode`. The `leetcode` directory contains some solutions along with their `C` annotation.
+
+Below is the list of programs:
+
+|  sno  |                                                          question                                                           | level  |                 topic                  |        assembly topics         |                  Open                   |
+| :---: | :-------------------------------------------------------------------------------------------------------------------------: | :----: | :------------------------------------: | :----------------------------: | :-------------------------------------: |
+|  1.   |                                        [Candy](https://leetcode.com/problems/candy/)                                        |  hard  |             array, greedy              | malloc, free, loop, conditions |       [open](./leetcode/candy.c)        |
+|  2.   |                              [Climbing Stairs](https://leetcode.com/problems/climbing-stairs/)                              |  easy  | Math, Dynamic Programming, Memoization |        loop, conditions        |  [open](./leetcode/climbing_stairs.c)   |
+|  3.   |                    [find the duplicate number](https://leetcode.com/problems/find-the-duplicate-number/)                    | medium |    array,two pointer, binary search    |        loop, conditions        |  [open](./leetcode/duplicate_number.c)  |
+|  4.   |                            [Fibonacci numbers](https://leetcode.com/problems/fibonacci-number/)                             |  easy  |    array,two pointer, binary search    |        loop, conditions        |     [open](./leetcode/fibonacci.c)      |
+|  5.   |                          [Find the difference](https://leetcode.com/problems/find-the-difference/)                          |  easy  |              hash, string              |       byte(char), loops        |  [open](./leetcode/find_difference.c)   |
+|  6.   |                                       [sqrt(x)](https://leetcode.com/problems/sqrtx/)                                       |  easy  |          math, binary search           |    long int <-> int, loops     |      [open](./leetcode/int_sqrt.c)      |
+|  7.   |                     [Min cost climbing stairs](https://leetcode.com/problems/min-cost-climbing-stairs/)                     |  easy  |               array, dp                | loops, conditions,malloc,free  | [open](./leetcode/min_cost_climbing.c)  |
+|  8.   | [minimum operations to reduce an integer to 0](https://leetcode.com/problems/minimum-operations-to-reduce-an-integer-to-0/) | medium |          dp, bit manipulation          |     recurrsion,conditions      | [open](./leetcode/min_op_to_reduce_0.c) |
+|  9.   |                               [missing number](https://leetcode.com/problems/missing-number/)                               |  easy  |           hash, math, array            |        loop, conditions        |  [open](./leetcode/missing_numbers.c)   |
+|  10.  |                                     [plus one](https://leetcode.com/problems/plus-one/)                                     |  easy  |              math, array               | malloc,free, loop, conditions  |      [open](./leetcode/plus_one.c)      |
+|  11.  |                                [single number](https://leetcode.com/problems/single-number/)                                |  easy  |        array, bit manipulation         |     bit manipulation,loop      |   [open](./leetcode/single_number.c)    |
+|  11.  |                                      [two sum](https://leetcode.com/problems/two-sum/)                                      |  easy  |           array, hash table            |     condition ,nested loop     |      [open](./leetcode/two_sum.c)       |
+
 
 # Why learn assembly language
 
