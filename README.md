@@ -616,6 +616,7 @@ Below is the list of programs:
 |  10.  |                                     [plus one](https://leetcode.com/problems/plus-one/)                                     |  easy  |              math, array               | malloc,free, loop, conditions  |      [open](./leetcode/plus_one.c)      |
 |  11.  |                                [single number](https://leetcode.com/problems/single-number/)                                |  easy  |        array, bit manipulation         |     bit manipulation,loop      |   [open](./leetcode/single_number.c)    |
 |  11.  |                                      [two sum](https://leetcode.com/problems/two-sum/)                                      |  easy  |           array, hash table            |     condition ,nested loop     |      [open](./leetcode/two_sum.c)       |
+|  12.  |                                      [asteroid collision](https://leetcode.com/problems/asteroid-collision/)                                      |  medium  |           array, stack            |     condition ,nested loop, malloc     |      [open](./leetcode/asteriod_collision.c)       |
 
 # Tools
 
